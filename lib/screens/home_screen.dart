@@ -1,0 +1,952 @@
+import 'dart:ui';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import '../data/mock_pantry_data.dart';
+import '../models/recipe_model.dart';
+import '../theme/app_theme.dart';
+import '../widgets/animated_ingredient_chip.dart';
+import '../widgets/cooker_filter_header.dart';
+import '../widgets/pantrykos_logo.dart';
+import '../widgets/recipe_matcher_card.dart';
+import 'recipe_detail_screen.dart';
+import 'scanner_ui_screen.dart';
+
+/// Main Dashboard & Space-Saving "Kulkas Virtual" Home Screen for PantryKos.
+/// Designed with the Elegant Midnight Navy Dark Theme (#0A0F1D) and an
+/// "Above-the-Fold" layout so Recipe Matcher Cards are immediately visible.
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
+  late final Set<String> _activeIngredientIds;
+  final Set<String> _bookmarkedRecipeIds = {'nasgor_mawut_magiccom'};
+  CookingTool _selectedTool = CookingTool.semuaAlat;
+  bool _onlyShowBookmarked = false;
+  String _searchQuery = '';
+
+  late final TextEditingController _searchController;
+  late final AnimationController _fabPulseController;
+
+  @override
+  void initState() {
+    super.initState();
+    _activeIngredientIds = Set<String>.from(
+      MockPantryData.defaultActiveIngredientIds,
+    );
+    _searchController = TextEditingController();
+    _fabPulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1600),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _fabPulseController.dispose();
+    super.dispose();
+  }
+
+  void _toggleIngredient(String id) {
+    setState(() {
+      if (_activeIngredientIds.contains(id)) {
+        _activeIngredientIds.remove(id);
+      } else {
+        _activeIngredientIds.add(id);
+      }
+    });
+  }
+
+  void _toggleBookmark(String recipeId) {
+    setState(() {
+      if (_bookmarkedRecipeIds.contains(recipeId)) {
+        _bookmarkedRecipeIds.remove(recipeId);
+      } else {
+        _bookmarkedRecipeIds.add(recipeId);
+      }
+    });
+  }
+
+  /// Orders active ingredients first in the Compact Pantry Dock so users
+  /// can immediately see and toggle their active fridge items, followed by
+  /// popular inactive staples.
+  List<PantryIngredient> get _dockOrderedIngredients {
+    final active = <PantryIngredient>[];
+    final inactive = <PantryIngredient>[];
+    for (final ing in MockPantryData.allIngredients) {
+      if (_activeIngredientIds.contains(ing.id)) {
+        active.add(ing);
+      } else {
+        inactive.add(ing);
+      }
+    }
+    return [...active, ...inactive];
+  }
+
+  /// Opens the Draggable Glassmorphic Bottom Sheet for full ingredient management
+  Future<void> _openManageIngredientsSheet() async {
+    HapticFeedback.mediumImpact();
+    IngredientCategory modalCategory = IngredientCategory.semua;
+    String modalSearch = '';
+
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetCtx) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            final filteredList = MockPantryData.allIngredients.where((item) {
+              final matchesCat =
+                  modalCategory == IngredientCategory.semua ||
+                  item.category == modalCategory;
+              final matchesQuery =
+                  modalSearch.trim().isEmpty ||
+                  item.name.toLowerCase().contains(
+                    modalSearch.trim().toLowerCase(),
+                  );
+              return matchesCat && matchesQuery;
+            }).toList();
+
+            return DraggableScrollableSheet(
+              initialChildSize: 0.72,
+              minChildSize: 0.50,
+              maxChildSize: 0.92,
+              expand: false,
+              builder: (context, scrollController) {
+                return ClipRRect(
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(28),
+                  ),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 22, sigmaY: 22),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: AppTheme.elevatedSlateSurface.withValues(
+                          alpha: 0.94,
+                        ),
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(28),
+                        ),
+                        border: const Border(
+                          top: BorderSide(
+                            color: AppTheme.slateBorder,
+                            width: 1.2,
+                          ),
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Drag Handle & Header
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Center(
+                                  child: Container(
+                                    width: 42,
+                                    height: 5,
+                                    decoration: BoxDecoration(
+                                      color: AppTheme.mutedSteelSubtitle
+                                          .withValues(alpha: 0.35),
+                                      borderRadius: BorderRadius.circular(999),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 14),
+                                Row(
+                                  children: [
+                                    const PantryKosLogoMark(size: 38),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const Text(
+                                            'Kelola Kulkas Virtual',
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w800,
+                                              color: AppTheme.iceWhiteTitle,
+                                            ),
+                                          ),
+                                          Text(
+                                            '${_activeIngredientIds.length} dari ${MockPantryData.allIngredients.length} bahan tersedia di kos',
+                                            style: const TextStyle(
+                                              fontSize: 12.5,
+                                              color:
+                                                  AppTheme.mutedSteelSubtitle,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        HapticFeedback.selectionClick();
+                                        setState(() {
+                                          if (_activeIngredientIds.length ==
+                                              MockPantryData
+                                                  .allIngredients
+                                                  .length) {
+                                            _activeIngredientIds
+                                              ..clear()
+                                              ..addAll(
+                                                MockPantryData
+                                                    .defaultActiveIngredientIds,
+                                              );
+                                          } else {
+                                            for (final item
+                                                in MockPantryData
+                                                    .allIngredients) {
+                                              _activeIngredientIds.add(item.id);
+                                            }
+                                          }
+                                        });
+                                        setModalState(() {});
+                                      },
+                                      child: Text(
+                                        _activeIngredientIds.length ==
+                                                MockPantryData
+                                                    .allIngredients
+                                                    .length
+                                            ? 'Reset Default'
+                                            : 'Pilih Semua',
+                                        style: const TextStyle(
+                                          fontSize: 12.5,
+                                          fontWeight: FontWeight.w700,
+                                          color: AppTheme.glowingSkyBorder,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 14),
+
+                                // Search inside Bottom Sheet
+                                TextField(
+                                  onChanged: (val) {
+                                    setModalState(() => modalSearch = val);
+                                  },
+                                  style: const TextStyle(
+                                    fontSize: 13.5,
+                                    color: AppTheme.iceWhiteTitle,
+                                  ),
+                                  decoration: InputDecoration(
+                                    hintText:
+                                        'Cari bahan (misal: Telur, Sosis, Keju, Cabai)...',
+                                    hintStyle: const TextStyle(
+                                      fontSize: 13,
+                                      color: AppTheme.mutedSteelSubtitle,
+                                    ),
+                                    prefixIcon: const Icon(
+                                      Icons.search_rounded,
+                                      size: 19,
+                                      color: AppTheme.glowingSkyBorder,
+                                    ),
+                                    fillColor: AppTheme.midnightNavyScaffold
+                                        .withValues(alpha: 0.7),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 14,
+                                      vertical: 11,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+
+                                // Category Filter Tabs inside Sheet
+                                SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Row(
+                                    children: IngredientCategory.values.map((
+                                      cat,
+                                    ) {
+                                      final selected = cat == modalCategory;
+                                      return Padding(
+                                        padding: const EdgeInsets.only(
+                                          right: 8,
+                                        ),
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            HapticFeedback.selectionClick();
+                                            setModalState(
+                                              () => modalCategory = cat,
+                                            );
+                                          },
+                                          child: AnimatedContainer(
+                                            duration: const Duration(
+                                              milliseconds: 200,
+                                            ),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 13,
+                                              vertical: 7,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              gradient: selected
+                                                  ? AppTheme.primaryGradient
+                                                  : null,
+                                              color: selected
+                                                  ? null
+                                                  : AppTheme
+                                                        .midnightNavyScaffold,
+                                              borderRadius:
+                                                  BorderRadius.circular(999),
+                                              border: Border.all(
+                                                color: selected
+                                                    ? AppTheme.glowingSkyBorder
+                                                    : AppTheme.slateBorder,
+                                              ),
+                                            ),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Icon(
+                                                  cat.icon,
+                                                  size: 14,
+                                                  color: selected
+                                                      ? AppTheme.iceWhiteTitle
+                                                      : AppTheme
+                                                            .mutedSteelSubtitle,
+                                                ),
+                                                const SizedBox(width: 6),
+                                                Text(
+                                                  cat.label,
+                                                  style: TextStyle(
+                                                    fontSize: 12.5,
+                                                    fontWeight: selected
+                                                        ? FontWeight.w700
+                                                        : FontWeight.w600,
+                                                    color: selected
+                                                        ? AppTheme.iceWhiteTitle
+                                                        : AppTheme
+                                                              .mutedSteelSubtitle,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          const Divider(
+                            height: 16,
+                            color: AppTheme.slateBorder,
+                          ),
+
+                          // Scrollable Ingredient Chips Grid/Wrap
+                          Expanded(
+                            child: SingleChildScrollView(
+                              controller: scrollController,
+                              padding: const EdgeInsets.fromLTRB(
+                                20,
+                                8,
+                                20,
+                                24,
+                              ),
+                              child: Wrap(
+                                spacing: 9,
+                                runSpacing: 10,
+                                children: filteredList.map((ing) {
+                                  final isSelected = _activeIngredientIds
+                                      .contains(ing.id);
+                                  return AnimatedIngredientChip(
+                                    key: ValueKey('modal_chip_${ing.id}'),
+                                    ingredient: ing,
+                                    isSelected: isSelected,
+                                    onTap: () {
+                                      _toggleIngredient(ing.id);
+                                      setModalState(() {});
+                                    },
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ),
+
+                          // Bottom Done CTA
+                          Container(
+                            padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+                            decoration: const BoxDecoration(
+                              color: AppTheme.midnightNavyScaffold,
+                              border: Border(
+                                top: BorderSide(color: AppTheme.slateBorder),
+                              ),
+                            ),
+                            child: SafeArea(
+                              top: false,
+                              child: SizedBox(
+                                width: double.infinity,
+                                child: DecoratedBox(
+                                  decoration: BoxDecoration(
+                                    gradient: AppTheme.primaryGradient,
+                                    borderRadius: BorderRadius.circular(16),
+                                    boxShadow: AppTheme.glowShadow(
+                                      AppTheme.primarySapphire,
+                                      intensity: 0.32,
+                                    ),
+                                  ),
+                                  child: ElevatedButton.icon(
+                                    onPressed: () =>
+                                        Navigator.of(sheetCtx).pop(),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.transparent,
+                                      shadowColor: Colors.transparent,
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 15,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                    ),
+                                    icon: const Icon(
+                                      Icons.check_circle_rounded,
+                                      size: 19,
+                                      color: Colors.white,
+                                    ),
+                                    label: Text(
+                                      'Simpan Kulkas (${_activeIngredientIds.length} Bahan Aktif)',
+                                      style: const TextStyle(
+                                        fontSize: 14.5,
+                                        fontWeight: FontWeight.w800,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _openSmartScanner() async {
+    HapticFeedback.mediumImpact();
+    final scannedIds = await Navigator.of(context).push<Set<String>>(
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            ScannerUiScreen(currentIngredientIds: _activeIngredientIds),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          final curved = CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeOutCubic,
+          );
+          return FadeTransition(
+            opacity: curved,
+            child: ScaleTransition(
+              scale: Tween<double>(begin: 0.95, end: 1.0).animate(curved),
+              child: child,
+            ),
+          );
+        },
+      ),
+    );
+
+    if (scannedIds != null && scannedIds.isNotEmpty && mounted) {
+      setState(() {
+        _activeIngredientIds.addAll(scannedIds);
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: AppTheme.emeraldReady,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+          content: Row(
+            children: [
+              const Icon(Icons.auto_awesome_rounded, color: Colors.white),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  '${scannedIds.length} bahan hasil AI Scan berhasil masuk Kulkas Virtual!',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+  }
+
+  void _openRecipeDetail(RecipeModel recipe) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => RecipeDetailScreen(
+          recipe: recipe,
+          activeIngredientIds: _activeIngredientIds,
+          initialBookmarked: _bookmarkedRecipeIds.contains(recipe.id),
+          onBookmarkToggle: () => _toggleBookmark(recipe.id),
+          onTogglePantryIngredient: (ingredientId) {
+            setState(() {
+              _activeIngredientIds.add(ingredientId);
+            });
+          },
+        ),
+      ),
+    );
+  }
+
+  List<RecipeMatchResult> get _evaluatedAndSortedRecipes {
+    final query = _searchQuery.trim().toLowerCase();
+
+    final results = <RecipeMatchResult>[];
+    for (final recipe in MockPantryData.recipes) {
+      // Filter by cooking tool
+      if (_selectedTool != CookingTool.semuaAlat &&
+          recipe.cookingTool != _selectedTool) {
+        continue;
+      }
+
+      // Filter by bookmark if active
+      if (_onlyShowBookmarked && !_bookmarkedRecipeIds.contains(recipe.id)) {
+        continue;
+      }
+
+      // Filter by search query (title, subtitle, or ingredient names)
+      if (query.isNotEmpty) {
+        final inTitle = recipe.title.toLowerCase().contains(query);
+        final inSubtitle = recipe.subtitle.toLowerCase().contains(query);
+        final inIngredients = recipe.ingredients.any(
+          (i) => i.displayName.toLowerCase().contains(query),
+        );
+        if (!inTitle && !inSubtitle && !inIngredients) {
+          continue;
+        }
+      }
+
+      results.add(recipe.evaluateMatch(_activeIngredientIds));
+    }
+
+    // Dynamically sort recipes:
+    // 1. Fewest missing ingredients first (0 missing -> 100% Siap Masak at top)
+    // 2. Highest match ratio
+    // 3. Lowest estimated cost
+    results.sort((a, b) {
+      final missingCompare = a.missingCount.compareTo(b.missingCount);
+      if (missingCompare != 0) return missingCompare;
+      final ratioCompare = b.matchRatio.compareTo(a.matchRatio);
+      if (ratioCompare != 0) return ratioCompare;
+      return a.recipe.estimatedCostRupiah.compareTo(
+        b.recipe.estimatedCostRupiah,
+      );
+    });
+
+    return results;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final matchedRecipes = _evaluatedAndSortedRecipes;
+    final ready100Count = matchedRecipes
+        .where((r) => r.tier == RecipeMatchTier.readyToCook)
+        .length;
+    final dockIngredients = _dockOrderedIngredients;
+
+    return Scaffold(
+      backgroundColor: AppTheme.midnightNavyScaffold,
+      body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          // A. Streamlined Collapsing SliverAppBar (Greeting + Sleek Search Bar)
+          SliverAppBar(
+            expandedHeight: 132,
+            pinned: true,
+            stretch: true,
+            backgroundColor: AppTheme.midnightNavyScaffold,
+            surfaceTintColor: Colors.transparent,
+            titleSpacing: 16,
+            title: const PantryKosBrandLockup(),
+            actions: [
+              // Quick AI Scan Icon Button in AppBar
+              IconButton(
+                onPressed: _openSmartScanner,
+                tooltip: 'AI Scan Kulkas',
+                icon: const Icon(
+                  Icons.qr_code_scanner_rounded,
+                  color: AppTheme.glowingSkyBorder,
+                  size: 21,
+                ),
+              ),
+              // Saved Bookmarks Filter Toggle
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: IconButton(
+                  onPressed: () {
+                    HapticFeedback.lightImpact();
+                    setState(() => _onlyShowBookmarked = !_onlyShowBookmarked);
+                  },
+                  tooltip: 'Resep Tersimpan',
+                  icon: Badge(
+                    isLabelVisible: _bookmarkedRecipeIds.isNotEmpty,
+                    label: Text('${_bookmarkedRecipeIds.length}'),
+                    backgroundColor: AppTheme.primarySapphire,
+                    child: Icon(
+                      _onlyShowBookmarked
+                          ? Icons.favorite_rounded
+                          : Icons.favorite_border_rounded,
+                      color: _onlyShowBookmarked
+                          ? const Color(0xFFFB7185)
+                          : AppTheme.mutedSteelSubtitle,
+                      size: 21,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+            flexibleSpace: FlexibleSpaceBar(
+              collapseMode: CollapseMode.pin,
+              background: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 62, 16, 8),
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: SizedBox(
+                      height: 44,
+                      child: TextField(
+                        controller: _searchController,
+                        onChanged: (val) => setState(() => _searchQuery = val),
+                        style: const TextStyle(
+                          fontSize: 13.5,
+                          color: AppTheme.iceWhiteTitle,
+                        ),
+                        decoration: InputDecoration(
+                          hintText:
+                              'Cari resep "Mawut", "Omelet", atau bahan...',
+                          hintStyle: const TextStyle(
+                            fontSize: 12.5,
+                            color: AppTheme.mutedSteelSubtitle,
+                          ),
+                          prefixIcon: const Icon(
+                            Icons.search_rounded,
+                            size: 19,
+                            color: AppTheme.glowingSkyBorder,
+                          ),
+                          suffixIcon: _searchQuery.isNotEmpty
+                              ? IconButton(
+                                  onPressed: () {
+                                    _searchController.clear();
+                                    setState(() => _searchQuery = '');
+                                  },
+                                  icon: const Icon(
+                                    Icons.close_rounded,
+                                    size: 17,
+                                    color: AppTheme.mutedSteelSubtitle,
+                                  ),
+                                )
+                              : null,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // B. Compact Pantry Dock (Max height: 110px, Single-Row Horizontal Chips)
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 4, 16, 6),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 110),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(18),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+                    child: Container(
+                      padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+                      decoration: BoxDecoration(
+                        color: AppTheme.elevatedSlateSurface.withValues(
+                          alpha: 0.92,
+                        ),
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(
+                          color: AppTheme.slateBorder,
+                          width: 1.0,
+                        ),
+                        boxShadow: AppTheme.softShadow(context),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Dock Header Row: "Isi Kulkasmu (X Bahan Aktif)" + "+ Kelola Bahan"
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.kitchen_rounded,
+                                size: 15,
+                                color: AppTheme.glowingSkyBorder,
+                              ),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  'Isi Kulkasmu (${_activeIngredientIds.length} Bahan Aktif)',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w800,
+                                    color: AppTheme.iceWhiteTitle,
+                                    letterSpacing: -0.2,
+                                  ),
+                                ),
+                              ),
+                              InkWell(
+                                onTap: _openManageIngredientsSheet,
+                                borderRadius: BorderRadius.circular(8),
+                                child: const Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                    vertical: 2,
+                                  ),
+                                  child: Text(
+                                    '+ Kelola Bahan',
+                                    style: TextStyle(
+                                      fontSize: 12.5,
+                                      fontWeight: FontWeight.w800,
+                                      color: AppTheme.glowingSkyBorder,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+
+                          // Single-row horizontal ListView.separated (height: 46px)
+                          SizedBox(
+                            height: 46,
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              physics: const BouncingScrollPhysics(),
+                              itemCount: dockIngredients.length,
+                              separatorBuilder: (_, _) =>
+                                  const SizedBox(width: 8),
+                              itemBuilder: (context, index) {
+                                final ing = dockIngredients[index];
+                                final isSelected = _activeIngredientIds
+                                    .contains(ing.id);
+                                return Center(
+                                  child: AnimatedIngredientChip(
+                                    key: ValueKey('dock_chip_${ing.id}'),
+                                    ingredient: ing,
+                                    isSelected: isSelected,
+                                    compact: true,
+                                    showRemoveIconWhenSelected: true,
+                                    onTap: () => _toggleIngredient(ing.id),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // C. Ultra-Thin Tool Filter Strip (height: 38px chip row inside sticky header)
+          SliverPersistentHeader(
+            pinned: true,
+            delegate: CookerFilterHeaderDelegate(
+              selectedTool: _selectedTool,
+              matchingRecipeCount: matchedRecipes.length,
+              readyNowCount: ready100Count,
+              onToolSelected: (tool) {
+                setState(() => _selectedTool = tool);
+              },
+            ),
+          ),
+
+          // D. Smart Recipe Matcher Cards List (Immediately Visible Above-the-Fold)
+          if (matchedRecipes.isEmpty)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 24, 16, 120),
+                child: Container(
+                  padding: const EdgeInsets.all(26),
+                  decoration: BoxDecoration(
+                    color: AppTheme.elevatedSlateSurface,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: AppTheme.slateBorder),
+                  ),
+                  child: Column(
+                    children: [
+                      const Text('🍽️', style: TextStyle(fontSize: 40)),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Belum ada resep yang cocok dengan filter ini',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Coba pilih "Semua Alat" atau bersihkan kata kunci pencarianmu.',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                      const SizedBox(height: 16),
+                      OutlinedButton.icon(
+                        onPressed: () {
+                          setState(() {
+                            _selectedTool = CookingTool.semuaAlat;
+                            _onlyShowBookmarked = false;
+                            _searchQuery = '';
+                            _searchController.clear();
+                          });
+                        },
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppTheme.glowingSkyBorder,
+                          side: const BorderSide(
+                            color: AppTheme.glowingSkyBorder,
+                          ),
+                        ),
+                        icon: const Icon(Icons.refresh_rounded, size: 18),
+                        label: const Text('Reset Filter Pencarian'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            )
+          else
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(16, 10, 16, 110),
+              sliver: SliverList.separated(
+                itemCount: matchedRecipes.length,
+                separatorBuilder: (_, _) => const SizedBox(height: 16),
+                itemBuilder: (context, index) {
+                  final match = matchedRecipes[index];
+                  return RecipeMatcherCard(
+                    key: ValueKey('card_${match.recipe.id}'),
+                    matchResult: match,
+                    animationIndex: index,
+                    isBookmarked: _bookmarkedRecipeIds.contains(
+                      match.recipe.id,
+                    ),
+                    onBookmarkToggle: () => _toggleBookmark(match.recipe.id),
+                    onTap: () => _openRecipeDetail(match.recipe),
+                    onQuickAddMissingIngredient: (missingId) {
+                      setState(() {
+                        _activeIngredientIds.add(missingId);
+                      });
+                    },
+                  );
+                },
+              ),
+            ),
+        ],
+      ),
+
+      // E. Prominent Pulsing Floating Action Button ("Scan Isi Kulkas") with Sapphire-Cyan Gradient
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: AnimatedBuilder(
+        animation: _fabPulseController,
+        builder: (context, child) {
+          final pulse = _fabPulseController.value;
+          return Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(999),
+              boxShadow: [
+                BoxShadow(
+                  color: AppTheme.primarySapphire.withValues(
+                    alpha: 0.32 + (0.28 * pulse),
+                  ),
+                  blurRadius: 16 + (14 * pulse),
+                  spreadRadius: 1 + (3 * pulse),
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: child,
+          );
+        },
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(999),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: _openSmartScanner,
+                borderRadius: BorderRadius.circular(999),
+                child: Ink(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 22,
+                    vertical: 14,
+                  ),
+                  decoration: BoxDecoration(
+                    gradient: AppTheme.primaryGradient,
+                    borderRadius: BorderRadius.circular(999),
+                    border: Border.all(
+                      color: AppTheme.glowingSkyBorder.withValues(alpha: 0.55),
+                      width: 1.2,
+                    ),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.document_scanner_rounded,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                      SizedBox(width: 10),
+                      Text(
+                        'Scan Isi Kulkas',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14.5,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.2,
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      Icon(
+                        Icons.auto_awesome_rounded,
+                        color: Color(0xFFBAE6FD),
+                        size: 16,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
