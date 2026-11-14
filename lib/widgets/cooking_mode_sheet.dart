@@ -207,38 +207,45 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                       Row(
                         children: [
                           // Tool Badge (#1E3A8A surface with #60A5FA text)
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 11,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: _royalSurface.withValues(alpha: 0.75),
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color: _softSkyText.withValues(alpha: 0.45),
+                          Flexible(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 11,
+                                vertical: 6,
                               ),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  widget.recipe.cookingTool.icon,
-                                  size: 14,
-                                  color: _softSkyText,
+                              decoration: BoxDecoration(
+                                color: _royalSurface.withValues(alpha: 0.75),
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  color: _softSkyText.withValues(alpha: 0.45),
                                 ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  'Mode Masak • ${widget.recipe.cookingTool.badgeLabel}',
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w800,
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    widget.recipe.cookingTool.icon,
+                                    size: 14,
                                     color: _softSkyText,
                                   ),
-                                ),
-                              ],
+                                  const SizedBox(width: 6),
+                                  Flexible(
+                                    child: Text(
+                                      widget.recipe.cookingTool.badgeLabel,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w800,
+                                        color: _softSkyText,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
+                          const SizedBox(width: 8),
                           const Spacer(),
                           Text(
                             'Langkah ${_currentStepIndex + 1} / $totalSteps',

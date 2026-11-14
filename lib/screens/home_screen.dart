@@ -3,53 +3,59 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../data/mock_pantry_data.dart';
 import '../models/recipe_model.dart';
+import '../state/pantry_controller.dart';
 import '../theme/app_theme.dart';
 import '../widgets/animated_ingredient_chip.dart';
 import '../widgets/cooker_filter_header.dart';
 import '../widgets/pantrykos_logo.dart';
 import '../widgets/recipe_matcher_card.dart';
 import 'recipe_detail_screen.dart';
-import 'scanner_ui_screen.dart';
 
 /// Main Dashboard & Space-Saving "Kulkas Virtual" Home Screen for PantryKos.
 /// Designed with the Elegant Midnight Navy Dark Theme (#0A0F1D) and an
 /// "Above-the-Fold" layout so Recipe Matcher Cards are immediately visible.
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final PantryController controller;
+  final VoidCallback onOpenScanner;
+
+  const HomeScreen({
+    super.key,
+    required this.controller,
+    required this.onOpenScanner,
+  });
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
-    with SingleTickerProviderStateMixin {
-  late final Set<String> _activeIngredientIds;
-  final Set<String> _bookmarkedRecipeIds = {'nasgor_mawut_magiccom'};
+class _HomeScreenState extends State<HomeScreen> {
+  Set<String> get _activeIngredientIds => widget.controller.activeIngredientIds;
+  Set<String> get _bookmarkedRecipeIds =>
+      widget.controller.bookmarkedRecipeIds;
   CookingTool _selectedTool = CookingTool.semuaAlat;
-  bool _onlyShowBookmarked = false;
   String _searchQuery = '';
 
   late final TextEditingController _searchController;
-  late final AnimationController _fabPulseController;
 
   @override
   void initState() {
     super.initState();
-    _activeIngredientIds = Set<String>.from(
-      MockPantryData.defaultActiveIngredientIds,
-    );
     _searchController = TextEditingController();
-    _fabPulseController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1600),
-    )..repeat(reverse: true);
   }
 
   @override
   void dispose() {
     _searchController.dispose();
-    _fabPulseController.dispose();
     super.dispose();
+  }
+
+  /// Every local mutation of the shared pantry/bookmark sets goes through
+  /// setState, so we also notify the controller to keep the Bookmark tab and
+  /// the navigation badge in sync.
+  @override
+  void setState(VoidCallback fn) {
+    super.setState(fn);
+    widget.controller.notifyChanged();
   }
 
   void _toggleIngredient(String id) {
@@ -443,59 +449,6 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  Future<void> _openSmartScanner() async {
-    HapticFeedback.mediumImpact();
-    final scannedIds = await Navigator.of(context).push<Set<String>>(
-      PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            ScannerUiScreen(currentIngredientIds: _activeIngredientIds),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          final curved = CurvedAnimation(
-            parent: animation,
-            curve: Curves.easeOutCubic,
-          );
-          return FadeTransition(
-            opacity: curved,
-            child: ScaleTransition(
-              scale: Tween<double>(begin: 0.95, end: 1.0).animate(curved),
-              child: child,
-            ),
-          );
-        },
-      ),
-    );
-
-    if (scannedIds != null && scannedIds.isNotEmpty && mounted) {
-      setState(() {
-        _activeIngredientIds.addAll(scannedIds);
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: AppTheme.emeraldReady,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
-          content: Row(
-            children: [
-              const Icon(Icons.auto_awesome_rounded, color: Colors.white),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  '${scannedIds.length} bahan hasil AI Scan berhasil masuk Kulkas Virtual!',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-  }
-
   void _openRecipeDetail(RecipeModel recipe) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
@@ -522,11 +475,6 @@ class _HomeScreenState extends State<HomeScreen>
       // Filter by cooking tool
       if (_selectedTool != CookingTool.semuaAlat &&
           recipe.cookingTool != _selectedTool) {
-        continue;
-      }
-
-      // Filter by bookmark if active
-      if (_onlyShowBookmarked && !_bookmarkedRecipeIds.contains(recipe.id)) {
         continue;
       }
 
@@ -573,9 +521,10 @@ class _HomeScreenState extends State<HomeScreen>
     return Scaffold(
       backgroundColor: AppTheme.midnightNavyScaffold,
       body: CustomScrollView(
+        key: const PageStorageKey<String>('home_scroll'),
         physics: const BouncingScrollPhysics(),
         slivers: [
-          // A. Streamlined Collapsing SliverAppBar (Greeting + Sleek Search Bar)
+          // A. Streamlined Collapsing SliverAppBar (Brand Lockup + Sleek Search Bar)
           SliverAppBar(
             expandedHeight: 132,
             pinned: true,
@@ -584,43 +533,6 @@ class _HomeScreenState extends State<HomeScreen>
             surfaceTintColor: Colors.transparent,
             titleSpacing: 16,
             title: const PantryKosBrandLockup(),
-            actions: [
-              // Quick AI Scan Icon Button in AppBar
-              IconButton(
-                onPressed: _openSmartScanner,
-                tooltip: 'AI Scan Kulkas',
-                icon: const Icon(
-                  Icons.qr_code_scanner_rounded,
-                  color: AppTheme.glowingSkyBorder,
-                  size: 21,
-                ),
-              ),
-              // Saved Bookmarks Filter Toggle
-              Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: IconButton(
-                  onPressed: () {
-                    HapticFeedback.lightImpact();
-                    setState(() => _onlyShowBookmarked = !_onlyShowBookmarked);
-                  },
-                  tooltip: 'Resep Tersimpan',
-                  icon: Badge(
-                    isLabelVisible: _bookmarkedRecipeIds.isNotEmpty,
-                    label: Text('${_bookmarkedRecipeIds.length}'),
-                    backgroundColor: AppTheme.primarySapphire,
-                    child: Icon(
-                      _onlyShowBookmarked
-                          ? Icons.favorite_rounded
-                          : Icons.favorite_border_rounded,
-                      color: _onlyShowBookmarked
-                          ? const Color(0xFFFB7185)
-                          : AppTheme.mutedSteelSubtitle,
-                      size: 21,
-                    ),
-                  ),
-                ),
-              ),
-            ],
             flexibleSpace: FlexibleSpaceBar(
               collapseMode: CollapseMode.pin,
               background: SafeArea(
@@ -822,7 +734,6 @@ class _HomeScreenState extends State<HomeScreen>
                         onPressed: () {
                           setState(() {
                             _selectedTool = CookingTool.semuaAlat;
-                            _onlyShowBookmarked = false;
                             _searchQuery = '';
                             _searchController.clear();
                           });
@@ -843,7 +754,7 @@ class _HomeScreenState extends State<HomeScreen>
             )
           else
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(16, 10, 16, 110),
+              padding: const EdgeInsets.fromLTRB(16, 10, 16, 136),
               sliver: SliverList.separated(
                 itemCount: matchedRecipes.length,
                 separatorBuilder: (_, _) => const SizedBox(height: 16),
@@ -868,84 +779,6 @@ class _HomeScreenState extends State<HomeScreen>
               ),
             ),
         ],
-      ),
-
-      // E. Prominent Pulsing Floating Action Button ("Scan Isi Kulkas") with Sapphire-Cyan Gradient
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: AnimatedBuilder(
-        animation: _fabPulseController,
-        builder: (context, child) {
-          final pulse = _fabPulseController.value;
-          return Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(999),
-              boxShadow: [
-                BoxShadow(
-                  color: AppTheme.primarySapphire.withValues(
-                    alpha: 0.32 + (0.28 * pulse),
-                  ),
-                  blurRadius: 16 + (14 * pulse),
-                  spreadRadius: 1 + (3 * pulse),
-                  offset: const Offset(0, 6),
-                ),
-              ],
-            ),
-            child: child,
-          );
-        },
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(999),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: _openSmartScanner,
-                borderRadius: BorderRadius.circular(999),
-                child: Ink(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 22,
-                    vertical: 14,
-                  ),
-                  decoration: BoxDecoration(
-                    gradient: AppTheme.primaryGradient,
-                    borderRadius: BorderRadius.circular(999),
-                    border: Border.all(
-                      color: AppTheme.glowingSkyBorder.withValues(alpha: 0.55),
-                      width: 1.2,
-                    ),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.document_scanner_rounded,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                      SizedBox(width: 10),
-                      Text(
-                        'Scan Isi Kulkas',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14.5,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 0.2,
-                        ),
-                      ),
-                      SizedBox(width: 8),
-                      Icon(
-                        Icons.auto_awesome_rounded,
-                        color: Color(0xFFBAE6FD),
-                        size: 16,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
       ),
     );
   }

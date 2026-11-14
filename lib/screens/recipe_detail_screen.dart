@@ -315,24 +315,31 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                           runSpacing: 8,
                           alignment: WrapAlignment.spaceBetween,
                           children: [
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(
-                                  Icons.payments_outlined,
-                                  size: 16,
-                                  color: _emeraldReady,
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  'Estimasi Biaya: ~${recipe.formattedCost}',
-                                  style: const TextStyle(
-                                    fontSize: 12.5,
-                                    fontWeight: FontWeight.w700,
-                                    color: _iceWhite,
+                            Text.rich(
+                              TextSpan(
+                                children: [
+                                  const WidgetSpan(
+                                    alignment: PlaceholderAlignment.middle,
+                                    child: Padding(
+                                      padding: EdgeInsets.only(right: 6),
+                                      child: Icon(
+                                        Icons.payments_outlined,
+                                        size: 16,
+                                        color: _emeraldReady,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ],
+                                  TextSpan(
+                                    text:
+                                        'Estimasi Biaya: ~${recipe.formattedCost}',
+                                  ),
+                                ],
+                              ),
+                              style: const TextStyle(
+                                fontSize: 12.5,
+                                fontWeight: FontWeight.w700,
+                                color: _iceWhite,
+                              ),
                             ),
                             Row(
                               mainAxisSize: MainAxisSize.min,
@@ -393,16 +400,20 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                       // 3. Interactive Ingredient Checklist Encapsulated in a Sleek #131B2E Card
                       Row(
                         children: [
-                          const Text(
-                            'Bahan-Bahan Masakan',
-                            style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.w800,
-                              color: _iceWhite,
-                              letterSpacing: -0.3,
+                          const Expanded(
+                            child: Text(
+                              'Bahan-Bahan Masakan',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w800,
+                                color: _iceWhite,
+                                letterSpacing: -0.3,
+                              ),
                             ),
                           ),
-                          const Spacer(),
+                          const SizedBox(width: 8),
                           Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 10,

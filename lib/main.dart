@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'screens/home_screen.dart';
+import 'screens/main_navigation.dart';
 import 'theme/app_theme.dart';
 
 void main() {
@@ -28,7 +28,7 @@ class PantryKosApp extends StatelessWidget {
       theme: AppTheme.midnightNavyTheme,
       darkTheme: AppTheme.midnightNavyTheme,
       themeMode: ThemeMode.dark,
-      home: const HomeScreen(),
+      home: const MainNavigation(),
     );
   }
 }
