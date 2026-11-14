@@ -3,14 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../data/mock_pantry_data.dart';
 import '../models/recipe_model.dart';
-import '../theme/app_theme.dart';
 import '../widgets/cooking_mode_sheet.dart';
 import '../widgets/food_illustration_widget.dart';
 
-/// Recipe Detail Screen styled in the Elegant Midnight Navy Dark Theme.
-/// Features Hero transition, CustomScrollView, Interactive Ingredient Checklist
-/// (custom animated checkbox + smooth strikethrough), and "Mulai Mode Masak"
-/// sticky glassmorphic CTA with Sapphire-Cyan gradient.
+/// Complete Recipe Detail Screen styled in the Midnight Navy Dark Theme
+/// (#090D16 background, #131B2E cards, #23304E subtle borders).
+/// Features:
+/// 1. Smooth Hero transition inside SliverAppBar with a bottom gradient scrim
+///    blending seamlessly into #090D16 + floating glassmorphic back/bookmark buttons.
+/// 2. Compact Metadata Row (#F8FAFC title, "Estimasi Biaya: ~Rp ...", cooking time,
+///    tool badge in #1E3A8A surface with #60A5FA text, and #10B981 / #F59E0B match badge).
+/// 3. Interactive Ingredient Checklist encapsulated in a sleek #131B2E card with
+///    glowing #38BDF8 / #10B981 checkboxes and smooth #94A3B8 strikethrough text.
+/// 4. "Mulai Mode Masak" Sticky Bottom Bar with a glowing Sapphire-Cyan gradient button.
 class RecipeDetailScreen extends StatefulWidget {
   final RecipeModel recipe;
   final Set<String> activeIngredientIds;
@@ -32,6 +37,19 @@ class RecipeDetailScreen extends StatefulWidget {
 }
 
 class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
+  // Exact Step 3 Midnight Navy Theme Palette
+  static const Color _bgNavy = Color(0xFF090D16);
+  static const Color _cardSlate = Color(0xFF131B2E);
+  static const Color _borderSlate = Color(0xFF23304E);
+  static const Color _royalToolSurface = Color(0xFF1E3A8A);
+  static const Color _softSkyText = Color(0xFF60A5FA);
+  static const Color _skyCyan = Color(0xFF38BDF8);
+  static const Color _sapphireBlue = Color(0xFF2563EB);
+  static const Color _emeraldReady = Color(0xFF10B981);
+  static const Color _amberWarn = Color(0xFFF59E0B);
+  static const Color _iceWhite = Color(0xFFF8FAFC);
+  static const Color _mutedSteel = Color(0xFF94A3B8);
+
   late final Set<String> _checkedPreparationIds;
   late final Set<String> _localPantryIds;
   late bool _isBookmarked;
@@ -85,21 +103,23 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
     final matchResult = recipe.evaluateMatch(_localPantryIds);
     final checkedCount = _checkedPreparationIds.length;
     final totalIngredients = recipe.ingredients.length;
+    final isReady100 = matchResult.tier == RecipeMatchTier.readyToCook;
 
     return Scaffold(
-      backgroundColor: AppTheme.midnightNavyScaffold,
+      backgroundColor: _bgNavy,
       body: Stack(
         children: [
           CustomScrollView(
             physics: const BouncingScrollPhysics(),
             slivers: [
-              // 1. Collapsing SliverAppBar with Hero Image
+              // 1. SliverAppBar with Smooth Hero Transition & Seamless #090D16 Scrim
               SliverAppBar(
-                expandedHeight: 300,
+                expandedHeight: 280,
                 pinned: true,
                 stretch: true,
                 automaticallyImplyLeading: false,
-                backgroundColor: AppTheme.midnightNavyScaffold,
+                backgroundColor: _bgNavy,
+                surfaceTintColor: Colors.transparent,
                 leadingWidth: 68,
                 leading: Padding(
                   padding: const EdgeInsets.only(left: 16),
@@ -120,7 +140,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                             : Icons.favorite_border_rounded,
                         iconColor: _isBookmarked
                             ? const Color(0xFFFB7185)
-                            : AppTheme.iceWhiteTitle,
+                            : _iceWhite,
                         onTap: () {
                           HapticFeedback.mediumImpact();
                           setState(() => _isBookmarked = !_isBookmarked);
@@ -138,80 +158,29 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                   background: Stack(
                     fit: StackFit.expand,
                     children: [
+                      // Hero Image
                       Hero(
                         tag: 'recipe_hero_${recipe.id}',
                         child: RecipeHeroImage(
                           recipe: recipe,
-                          showBottomScrim: true,
+                          showBottomScrim: false,
                         ),
                       ),
-                      Positioned(
-                        left: 20,
-                        right: 20,
-                        bottom: 22,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            // Match Status Pill Badge
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color:
-                                    matchResult.tier ==
-                                        RecipeMatchTier.readyToCook
-                                    ? AppTheme.emeraldReady
-                                    : AppTheme.amberAlmost,
-                                borderRadius: BorderRadius.circular(999),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    matchResult.tier ==
-                                            RecipeMatchTier.readyToCook
-                                        ? Icons.verified_rounded
-                                        : Icons.info_outline_rounded,
-                                    size: 14,
-                                    color:
-                                        matchResult.tier ==
-                                            RecipeMatchTier.readyToCook
-                                        ? Colors.white
-                                        : AppTheme.midnightNavyScaffold,
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Flexible(
-                                    child: Text(
-                                      matchResult.badgeText,
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w800,
-                                        color:
-                                            matchResult.tier ==
-                                                RecipeMatchTier.readyToCook
-                                            ? Colors.white
-                                            : AppTheme.midnightNavyScaffold,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              recipe.title,
-                              style: const TextStyle(
-                                fontSize: 25,
-                                fontWeight: FontWeight.w800,
-                                color: AppTheme.iceWhiteTitle,
-                                letterSpacing: -0.5,
-                                height: 1.2,
-                              ),
-                            ),
-                          ],
+
+                      // Multi-stop bottom gradient scrim blending seamlessly into #090D16
+                      DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            stops: const [0.0, 0.35, 0.72, 1.0],
+                            colors: [
+                              _bgNavy.withValues(alpha: 0.48),
+                              Colors.transparent,
+                              _bgNavy.withValues(alpha: 0.78),
+                              _bgNavy,
+                            ],
+                          ),
                         ),
                       ),
                     ],
@@ -219,65 +188,504 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                 ),
               ),
 
-              // 2. Detail Content Body
+              // 2. Main Recipe Detail Body
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 130),
+                  padding: const EdgeInsets.fromLTRB(20, 4, 20, 130),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Quick Metadata Grid (Time, Tool, Cost)
-                      Row(
+                      // 2A. Semantic Match Badge + Required Tool Badge Row
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
-                          Expanded(
-                            child: _MetricInfoTile(
-                              icon: Icons.schedule_rounded,
-                              label: 'Waktu',
-                              value: recipe.formattedTime,
-                              accent: AppTheme.glowingSkyBorder,
+                          // Semantic Match Badge (#10B981 Emerald or #F59E0B Amber)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 11,
+                              vertical: 5.5,
+                            ),
+                            decoration: BoxDecoration(
+                              color: isReady100 ? _emeraldReady : _amberWarn,
+                              borderRadius: BorderRadius.circular(999),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: (isReady100
+                                          ? _emeraldReady
+                                          : _amberWarn)
+                                      .withValues(alpha: 0.35),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  isReady100
+                                      ? Icons.verified_rounded
+                                      : Icons.auto_awesome_rounded,
+                                  size: 13.5,
+                                  color: isReady100
+                                      ? Colors.white
+                                      : _bgNavy,
+                                ),
+                                const SizedBox(width: 5),
+                                Text(
+                                  matchResult.badgeText,
+                                  style: TextStyle(
+                                    fontSize: 11.5,
+                                    fontWeight: FontWeight.w800,
+                                    color: isReady100
+                                        ? Colors.white
+                                        : _bgNavy,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: _MetricInfoTile(
-                              icon: recipe.cookingTool.icon,
-                              label: 'Alat Kos',
-                              value: recipe.cookingTool.badgeLabel,
-                              accent: AppTheme.gradientCyanEnd,
+
+                          // Required Tool Badge (#1E3A8A surface with #60A5FA text)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 11,
+                              vertical: 5.5,
                             ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: _MetricInfoTile(
-                              icon: Icons.payments_outlined,
-                              label: 'Estimasi',
-                              value: recipe.formattedCost,
-                              accent: AppTheme.emeraldReady,
+                            decoration: BoxDecoration(
+                              color: _royalToolSurface,
+                              borderRadius: BorderRadius.circular(999),
+                              border: Border.all(
+                                color: _softSkyText.withValues(alpha: 0.45),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  recipe.cookingTool.icon,
+                                  size: 13.5,
+                                  color: _softSkyText,
+                                ),
+                                const SizedBox(width: 5),
+                                Text(
+                                  recipe.cookingTool.badgeLabel,
+                                  style: const TextStyle(
+                                    fontSize: 11.5,
+                                    fontWeight: FontWeight.w800,
+                                    color: _softSkyText,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
 
-                      const SizedBox(height: 18),
+                      const SizedBox(height: 12),
 
-                      // Description
+                      // 2B. Recipe Title in #F8FAFC
                       Text(
-                        recipe.description,
-                        style: Theme.of(context).textTheme.bodyLarge,
+                        recipe.title,
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w800,
+                          color: _iceWhite,
+                          letterSpacing: -0.5,
+                          height: 1.2,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+
+                      // 2C. Compact Metadata Row ("Estimasi Biaya: ~Rp ...", Cooking Time, Calories)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 11,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _cardSlate,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: _borderSlate),
+                        ),
+                        child: Wrap(
+                          spacing: 16,
+                          runSpacing: 8,
+                          alignment: WrapAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.payments_outlined,
+                                  size: 16,
+                                  color: _emeraldReady,
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  'Estimasi Biaya: ~${recipe.formattedCost}',
+                                  style: const TextStyle(
+                                    fontSize: 12.5,
+                                    fontWeight: FontWeight.w700,
+                                    color: _iceWhite,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.schedule_rounded,
+                                  size: 16,
+                                  color: _skyCyan,
+                                ),
+                                const SizedBox(width: 5),
+                                Text(
+                                  recipe.formattedTime,
+                                  style: const TextStyle(
+                                    fontSize: 12.5,
+                                    fontWeight: FontWeight.w700,
+                                    color: _iceWhite,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.local_fire_department_outlined,
+                                  size: 16,
+                                  color: _amberWarn,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  '${recipe.calories} kkal',
+                                  style: const TextStyle(
+                                    fontSize: 12.5,
+                                    fontWeight: FontWeight.w600,
+                                    color: _mutedSteel,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
 
-                      const SizedBox(height: 18),
+                      const SizedBox(height: 14),
 
-                      // Anak-Kos Hack Pro Tip Banner
+                      // Recipe Description
+                      Text(
+                        recipe.description,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: _mutedSteel,
+                          height: 1.5,
+                        ),
+                      ),
+
+                      const SizedBox(height: 24),
+
+                      // 3. Interactive Ingredient Checklist Encapsulated in a Sleek #131B2E Card
+                      Row(
+                        children: [
+                          const Text(
+                            'Bahan-Bahan Masakan',
+                            style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w800,
+                              color: _iceWhite,
+                              letterSpacing: -0.3,
+                            ),
+                          ),
+                          const Spacer(),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: checkedCount == totalIngredients
+                                  ? _emeraldReady.withValues(alpha: 0.16)
+                                  : _royalToolSurface.withValues(alpha: 0.65),
+                              borderRadius: BorderRadius.circular(999),
+                              border: Border.all(
+                                color: checkedCount == totalIngredients
+                                    ? _emeraldReady
+                                    : _softSkyText.withValues(alpha: 0.45),
+                              ),
+                            ),
+                            child: Text(
+                              '$checkedCount/$totalIngredients Siap',
+                              style: TextStyle(
+                                fontSize: 11.5,
+                                fontWeight: FontWeight.w800,
+                                color: checkedCount == totalIngredients
+                                    ? _emeraldReady
+                                    : _softSkyText,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+
+                      // Encapsulated #131B2E Card for Ingredient Rows
+                      Container(
+                        decoration: BoxDecoration(
+                          color: _cardSlate,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: _borderSlate,
+                            width: 1.2,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.35),
+                              blurRadius: 20,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          children: List.generate(recipe.ingredients.length, (
+                            index,
+                          ) {
+                            final item = recipe.ingredients[index];
+                            final isChecked = _checkedPreparationIds.contains(
+                              item.ingredientId,
+                            );
+                            final inPantry = _localPantryIds.contains(
+                              item.ingredientId,
+                            );
+                            final pantryObj =
+                                MockPantryData.findIngredientById(
+                                  item.ingredientId,
+                                );
+
+                            return Column(
+                              children: [
+                                if (index > 0)
+                                  const Divider(
+                                    height: 1,
+                                    indent: 16,
+                                    endIndent: 16,
+                                    color: _borderSlate,
+                                  ),
+                                InkWell(
+                                  onTap: () => _togglePrepChecklist(
+                                    item.ingredientId,
+                                  ),
+                                  borderRadius: BorderRadius.vertical(
+                                    top: index == 0
+                                        ? const Radius.circular(20)
+                                        : Radius.zero,
+                                    bottom:
+                                        index == recipe.ingredients.length - 1
+                                        ? const Radius.circular(20)
+                                        : Radius.zero,
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 14,
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        // Custom Glowing Cyan/Emerald Checkbox (#38BDF8 / #10B981)
+                                        AnimatedScale(
+                                          scale: isChecked ? 1.08 : 1.0,
+                                          duration: const Duration(
+                                            milliseconds: 200,
+                                          ),
+                                          curve: Curves.easeOutBack,
+                                          child: AnimatedContainer(
+                                            duration: const Duration(
+                                              milliseconds: 220,
+                                            ),
+                                            width: 24,
+                                            height: 24,
+                                            decoration: BoxDecoration(
+                                              gradient: isChecked
+                                                  ? const LinearGradient(
+                                                      begin: Alignment.topLeft,
+                                                      end:
+                                                          Alignment.bottomRight,
+                                                      colors: [
+                                                        _skyCyan,
+                                                        _emeraldReady,
+                                                      ],
+                                                    )
+                                                  : null,
+                                              color: isChecked
+                                                  ? null
+                                                  : _bgNavy,
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              border: Border.all(
+                                                color: isChecked
+                                                    ? _skyCyan
+                                                    : _borderSlate,
+                                                width: 1.6,
+                                              ),
+                                              boxShadow: isChecked
+                                                  ? [
+                                                      BoxShadow(
+                                                        color: _skyCyan
+                                                            .withValues(
+                                                              alpha: 0.38,
+                                                            ),
+                                                        blurRadius: 10,
+                                                        offset: const Offset(
+                                                          0,
+                                                          2,
+                                                        ),
+                                                      ),
+                                                    ]
+                                                  : null,
+                                            ),
+                                            child: isChecked
+                                                ? const Icon(
+                                                    Icons.check_rounded,
+                                                    size: 16,
+                                                    color: Colors.white,
+                                                  )
+                                                : null,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Text(
+                                          pantryObj?.emoji ?? '🥘',
+                                          style: const TextStyle(fontSize: 18),
+                                        ),
+                                        const SizedBox(width: 10),
+
+                                        // Ingredient Name + Measure with Smooth Strikethrough (#94A3B8)
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              AnimatedDefaultTextStyle(
+                                                duration: const Duration(
+                                                  milliseconds: 220,
+                                                ),
+                                                style: TextStyle(
+                                                  fontSize: 14.5,
+                                                  fontWeight: FontWeight.w700,
+                                                  color: isChecked
+                                                      ? _mutedSteel
+                                                      : _iceWhite,
+                                                  decoration: isChecked
+                                                      ? TextDecoration
+                                                            .lineThrough
+                                                      : TextDecoration.none,
+                                                  decorationColor: _skyCyan,
+                                                  decorationThickness: 2.0,
+                                                ),
+                                                child: Text(item.displayName),
+                                              ),
+                                              const SizedBox(height: 2),
+                                              Text(
+                                                item.measure,
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                  color: _mutedSteel,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+
+                                        // Fridge Status Pill or Quick Add Button
+                                        if (inPantry)
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                              vertical: 4,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: _emeraldReady.withValues(
+                                                alpha: 0.14,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            child: const Text(
+                                              'Ada di Kulkas',
+                                              style: TextStyle(
+                                                fontSize: 10.5,
+                                                fontWeight: FontWeight.w700,
+                                                color: _emeraldReady,
+                                              ),
+                                            ),
+                                          )
+                                        else
+                                          GestureDetector(
+                                            onTap: () => _addMissingToFridge(
+                                              item.ingredientId,
+                                            ),
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 8,
+                                                    vertical: 4,
+                                                  ),
+                                              decoration: BoxDecoration(
+                                                color: _royalToolSurface
+                                                    .withValues(alpha: 0.7),
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                border: Border.all(
+                                                  color: _softSkyText
+                                                      .withValues(alpha: 0.5),
+                                                ),
+                                              ),
+                                              child: const Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Icon(
+                                                    Icons.add_rounded,
+                                                    size: 12,
+                                                    color: _softSkyText,
+                                                  ),
+                                                  SizedBox(width: 2),
+                                                  Text(
+                                                    'Kulkas',
+                                                    style: TextStyle(
+                                                      fontSize: 10.5,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      color: _softSkyText,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          }),
+                        ),
+                      ),
+
+                      const SizedBox(height: 22),
+
+                      // Anak-Kos Pro Tip Card
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: AppTheme.activeChipSurface,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: AppTheme.glowingSkyBorder,
-                            width: 1.1,
-                          ),
+                          color: _cardSlate,
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(color: _borderSlate),
                         ),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -285,12 +693,12 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                             Container(
                               padding: const EdgeInsets.all(9),
                               decoration: BoxDecoration(
-                                gradient: AppTheme.primaryGradient,
+                                color: _royalToolSurface,
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: const Icon(
                                 Icons.lightbulb_rounded,
-                                color: Colors.white,
+                                color: _softSkyText,
                                 size: 18,
                               ),
                             ),
@@ -304,18 +712,17 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                                     style: TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w800,
-                                      color: AppTheme.glowingSkyBorder,
+                                      color: _softSkyText,
                                     ),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
                                     recipe.kosHackTip,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium
-                                        ?.copyWith(
-                                          color: AppTheme.iceWhiteTitle,
-                                        ),
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      color: _mutedSteel,
+                                      height: 1.45,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -324,254 +731,17 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                         ),
                       ),
 
-                      const SizedBox(height: 26),
-
-                      // Interactive Ingredient Checklist Section Header
-                      Row(
-                        children: [
-                          Text(
-                            'Checklist Bahan Masak',
-                            style: Theme.of(context).textTheme.headlineSmall,
-                          ),
-                          const Spacer(),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 5,
-                            ),
-                            decoration: BoxDecoration(
-                              color: checkedCount == totalIngredients
-                                  ? AppTheme.emeraldReady.withValues(
-                                      alpha: 0.16,
-                                    )
-                                  : AppTheme.activeChipSurface,
-                              borderRadius: BorderRadius.circular(999),
-                              border: Border.all(
-                                color: checkedCount == totalIngredients
-                                    ? AppTheme.emeraldReady
-                                    : AppTheme.glowingSkyBorder,
-                              ),
-                            ),
-                            child: Text(
-                              '$checkedCount/$totalIngredients Siap',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w800,
-                                color: checkedCount == totalIngredients
-                                    ? AppTheme.emeraldReady
-                                    : AppTheme.glowingSkyBorder,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Ketuk bahan untuk mencentang persiapan sebelum mulai memasak.',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      const SizedBox(height: 14),
-
-                      // Interactive Ingredient Checklist Items
-                      ...recipe.ingredients.map((item) {
-                        final isChecked = _checkedPreparationIds.contains(
-                          item.ingredientId,
-                        );
-                        final inPantry = _localPantryIds.contains(
-                          item.ingredientId,
-                        );
-                        final pantryObj = MockPantryData.findIngredientById(
-                          item.ingredientId,
-                        );
-
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 10),
-                          child: GestureDetector(
-                            onTap: () => _togglePrepChecklist(
-                              item.ingredientId,
-                            ),
-                            behavior: HitTestBehavior.opaque,
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 240),
-                              curve: Curves.easeOutCubic,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 14,
-                                vertical: 13,
-                              ),
-                              decoration: BoxDecoration(
-                                color: isChecked
-                                    ? AppTheme.emeraldReady.withValues(
-                                        alpha: 0.12,
-                                      )
-                                    : AppTheme.elevatedSlateSurface,
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
-                                  color: isChecked
-                                      ? AppTheme.emeraldReady.withValues(
-                                          alpha: 0.6,
-                                        )
-                                      : AppTheme.slateBorder,
-                                  width: isChecked ? 1.4 : 1.0,
-                                ),
-                              ),
-                              child: Row(
-                                children: [
-                                  // Custom Animated Checkbox
-                                  AnimatedScale(
-                                    scale: isChecked ? 1.06 : 1.0,
-                                    duration: const Duration(milliseconds: 180),
-                                    curve: Curves.easeOutBack,
-                                    child: AnimatedContainer(
-                                      duration: const Duration(
-                                        milliseconds: 200,
-                                      ),
-                                      width: 24,
-                                      height: 24,
-                                      decoration: BoxDecoration(
-                                        color: isChecked
-                                            ? AppTheme.emeraldReady
-                                            : Colors.transparent,
-                                        borderRadius: BorderRadius.circular(8),
-                                        border: Border.all(
-                                          color: isChecked
-                                              ? AppTheme.emeraldReady
-                                              : AppTheme.mutedSteelSubtitle,
-                                          width: 1.8,
-                                        ),
-                                      ),
-                                      child: isChecked
-                                          ? const Icon(
-                                              Icons.check_rounded,
-                                              size: 16,
-                                              color: Colors.white,
-                                            )
-                                          : null,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Text(
-                                    pantryObj?.emoji ?? '🥘',
-                                    style: const TextStyle(fontSize: 18),
-                                  ),
-                                  const SizedBox(width: 10),
-
-                                  // Ingredient Name & Measure with Smooth Strikethrough
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        AnimatedDefaultTextStyle(
-                                          duration: const Duration(
-                                            milliseconds: 220,
-                                          ),
-                                          style: TextStyle(
-                                            fontSize: 14.5,
-                                            fontWeight: FontWeight.w700,
-                                            color: isChecked
-                                                ? AppTheme.mutedSteelSubtitle
-                                                : AppTheme.iceWhiteTitle,
-                                            decoration: isChecked
-                                                ? TextDecoration.lineThrough
-                                                : TextDecoration.none,
-                                            decorationColor:
-                                                AppTheme.emeraldReady,
-                                            decorationThickness: 2.0,
-                                          ),
-                                          child: Text(item.displayName),
-                                        ),
-                                        const SizedBox(height: 2),
-                                        Text(
-                                          item.measure,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium
-                                              ?.copyWith(fontSize: 12),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-
-                                  // Status Pill: Ada di Kulkas vs Kurang (Tap to add)
-                                  if (inPantry)
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 8,
-                                        vertical: 4,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: AppTheme.emeraldReady.withValues(
-                                          alpha: 0.16,
-                                        ),
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: const Text(
-                                        'Di Kulkas',
-                                        style: TextStyle(
-                                          fontSize: 10.5,
-                                          fontWeight: FontWeight.w700,
-                                          color: AppTheme.emeraldReady,
-                                        ),
-                                      ),
-                                    )
-                                  else
-                                    InkWell(
-                                      onTap: () => _addMissingToFridge(
-                                        item.ingredientId,
-                                      ),
-                                      borderRadius: BorderRadius.circular(8),
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 8,
-                                          vertical: 4,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: AppTheme.activeChipSurface,
-                                          borderRadius: BorderRadius.circular(
-                                            8,
-                                          ),
-                                          border: Border.all(
-                                            color: AppTheme.glowingSkyBorder,
-                                          ),
-                                        ),
-                                        child: const Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(
-                                              Icons.add_rounded,
-                                              size: 12,
-                                              color: AppTheme.glowingSkyBorder,
-                                            ),
-                                            SizedBox(width: 2),
-                                            Text(
-                                              'Tambah ke Kulkas',
-                                              style: TextStyle(
-                                                fontSize: 10.5,
-                                                fontWeight: FontWeight.w700,
-                                                color: AppTheme.iceWhiteTitle,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      }),
-
                       const SizedBox(height: 24),
 
-                      // Ringkasan Langkah Memasak
-                      Row(
-                        children: [
-                          Text(
-                            'Tahapan Memasak (${recipe.steps.length} Langkah)',
-                            style: Theme.of(context).textTheme.headlineSmall,
-                          ),
-                        ],
+                      // Preview of Cooking Steps
+                      Text(
+                        'Ringkasan Langkah (${recipe.steps.length} Tahap)',
+                        style: const TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w800,
+                          color: _iceWhite,
+                          letterSpacing: -0.3,
+                        ),
                       ),
                       const SizedBox(height: 12),
 
@@ -580,9 +750,9 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                           margin: const EdgeInsets.only(bottom: 12),
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: AppTheme.elevatedSlateSurface,
+                            color: _cardSlate,
                             borderRadius: BorderRadius.circular(18),
-                            border: Border.all(color: AppTheme.slateBorder),
+                            border: Border.all(color: _borderSlate),
                           ),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -591,10 +761,10 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                                 width: 32,
                                 height: 32,
                                 decoration: BoxDecoration(
-                                  color: AppTheme.activeChipSurface,
+                                  color: _royalToolSurface,
                                   borderRadius: BorderRadius.circular(10),
                                   border: Border.all(
-                                    color: AppTheme.glowingSkyBorder,
+                                    color: _softSkyText.withValues(alpha: 0.45),
                                   ),
                                 ),
                                 alignment: Alignment.center,
@@ -603,7 +773,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                                   style: const TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w800,
-                                    color: AppTheme.iceWhiteTitle,
+                                    color: _softSkyText,
                                   ),
                                 ),
                               ),
@@ -617,12 +787,11 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                                         Expanded(
                                           child: Text(
                                             step.title,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .titleMedium
-                                                ?.copyWith(
-                                                  fontWeight: FontWeight.w700,
-                                                ),
+                                            style: const TextStyle(
+                                              fontSize: 14.5,
+                                              fontWeight: FontWeight.w700,
+                                              color: _iceWhite,
+                                            ),
                                           ),
                                         ),
                                         if (step.timerSeconds != null)
@@ -632,10 +801,12 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                                               vertical: 3,
                                             ),
                                             decoration: BoxDecoration(
-                                              color: AppTheme.amberAlmost
-                                                  .withValues(alpha: 0.16),
+                                              color: _bgNavy,
                                               borderRadius:
                                                   BorderRadius.circular(8),
+                                              border: Border.all(
+                                                color: _borderSlate,
+                                              ),
                                             ),
                                             child: Row(
                                               mainAxisSize: MainAxisSize.min,
@@ -643,7 +814,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                                                 const Icon(
                                                   Icons.timer_outlined,
                                                   size: 12,
-                                                  color: AppTheme.amberAlmost,
+                                                  color: _skyCyan,
                                                 ),
                                                 const SizedBox(width: 4),
                                                 Text(
@@ -651,7 +822,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                                                   style: const TextStyle(
                                                     fontSize: 11,
                                                     fontWeight: FontWeight.w700,
-                                                    color: AppTheme.amberAlmost,
+                                                    color: _skyCyan,
                                                   ),
                                                 ),
                                               ],
@@ -662,9 +833,11 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                                     const SizedBox(height: 6),
                                     Text(
                                       step.instruction,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium,
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        color: _mutedSteel,
+                                        height: 1.45,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -680,20 +853,18 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
             ],
           ),
 
-          // 3. Sticky Glassmorphic Bottom Bar with "Mulai Mode Masak" Button
+          // 4. "Mulai Mode Masak" Sticky Bottom Bar with Glowing Sapphire-Cyan Gradient Button
           Align(
             alignment: Alignment.bottomCenter,
             child: ClipRect(
               child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
                 child: Container(
                   padding: const EdgeInsets.fromLTRB(20, 14, 20, 22),
                   decoration: BoxDecoration(
-                    color: AppTheme.midnightNavyScaffold.withValues(
-                      alpha: 0.88,
-                    ),
+                    color: _bgNavy.withValues(alpha: 0.88),
                     border: const Border(
-                      top: BorderSide(color: AppTheme.slateBorder),
+                      top: BorderSide(color: _borderSlate, width: 1.2),
                     ),
                   ),
                   child: SafeArea(
@@ -702,12 +873,20 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                       width: double.infinity,
                       child: DecoratedBox(
                         decoration: BoxDecoration(
-                          gradient: AppTheme.primaryGradient,
-                          borderRadius: BorderRadius.circular(18),
-                          boxShadow: AppTheme.glowShadow(
-                            AppTheme.primarySapphire,
-                            intensity: 0.38,
+                          gradient: const LinearGradient(
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                            colors: [_sapphireBlue, _skyCyan],
                           ),
+                          borderRadius: BorderRadius.circular(18),
+                          boxShadow: [
+                            BoxShadow(
+                              color: _sapphireBlue.withValues(alpha: 0.45),
+                              blurRadius: 20,
+                              spreadRadius: 1,
+                              offset: const Offset(0, 6),
+                            ),
+                          ],
                         ),
                         child: ElevatedButton.icon(
                           onPressed: _openCookingMode,
@@ -725,11 +904,12 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                             color: Colors.white,
                           ),
                           label: const Text(
-                            'Mulai Mode Masak (Step-by-Step + Timer)',
+                            'Mulai Mode Masak',
                             style: TextStyle(
                               fontSize: 15.5,
                               fontWeight: FontWeight.w800,
                               color: Colors.white,
+                              letterSpacing: 0.2,
                             ),
                           ),
                         ),
@@ -753,7 +933,7 @@ class _GlassCircleButton extends StatelessWidget {
 
   const _GlassCircleButton({
     required this.icon,
-    this.iconColor = Colors.white,
+    this.iconColor = const Color(0xFFF8FAFC),
     required this.onTap,
   });
 
@@ -763,68 +943,22 @@ class _GlassCircleButton extends StatelessWidget {
       onTap: onTap,
       child: ClipOval(
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
           child: Container(
             width: 42,
             height: 42,
             decoration: BoxDecoration(
-              color: AppTheme.midnightNavyScaffold.withValues(alpha: 0.55),
+              color: const Color(0xFF131B2E).withValues(alpha: 0.72),
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.white.withValues(alpha: 0.22)),
+              border: Border.all(
+                color: const Color(0xFF23304E),
+                width: 1.2,
+              ),
             ),
             alignment: Alignment.center,
             child: Icon(icon, size: 19, color: iconColor),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _MetricInfoTile extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-  final Color accent;
-
-  const _MetricInfoTile({
-    required this.icon,
-    required this.label,
-    required this.value,
-    required this.accent,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-      decoration: BoxDecoration(
-        color: AppTheme.elevatedSlateSurface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.slateBorder),
-        boxShadow: AppTheme.softShadow(context),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(icon, size: 15, color: accent),
-              const SizedBox(width: 5),
-              Text(label, style: Theme.of(context).textTheme.labelMedium),
-            ],
-          ),
-          const SizedBox(height: 6),
-          Text(
-            value,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w800,
-              fontSize: 13.5,
-            ),
-          ),
-        ],
       ),
     );
   }

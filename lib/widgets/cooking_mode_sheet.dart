@@ -4,11 +4,12 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../models/recipe_model.dart';
-import '../theme/app_theme.dart';
 
-/// Immersive Step-by-Step Cooking Mode Sheet using [PageView],
-/// smooth progress indicator bar, large readable instructions,
-/// and a built-in interactive countdown timer widget for boiling/frying steps.
+/// Full-screen Dark Navy (#090D16) Step-by-Step Cooking Mode Sheet.
+/// Features a PageView, a #38BDF8 animated progress indicator bar,
+/// large readable instructions in #131B2E cards with #23304E borders,
+/// and a built-in interactive circular/pill countdown timer widget
+/// (Start / Pause / Reset).
 class CookingModeSheet extends StatefulWidget {
   final RecipeModel recipe;
 
@@ -19,6 +20,19 @@ class CookingModeSheet extends StatefulWidget {
 }
 
 class _CookingModeSheetState extends State<CookingModeSheet> {
+  // Exact Step 3 Midnight Navy Theme Palette
+  static const Color _bgNavy = Color(0xFF090D16);
+  static const Color _cardSlate = Color(0xFF131B2E);
+  static const Color _borderSlate = Color(0xFF23304E);
+  static const Color _skyCyan = Color(0xFF38BDF8);
+  static const Color _sapphireBlue = Color(0xFF2563EB);
+  static const Color _royalSurface = Color(0xFF1E3A8A);
+  static const Color _softSkyText = Color(0xFF60A5FA);
+  static const Color _emeraldReady = Color(0xFF10B981);
+  static const Color _amberWarn = Color(0xFFF59E0B);
+  static const Color _iceWhite = Color(0xFFF8FAFC);
+  static const Color _mutedSteel = Color(0xFF94A3B8);
+
   late final PageController _pageController;
   int _currentStepIndex = 0;
   final Set<int> _completedSteps = {};
@@ -63,10 +77,10 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
       context: context,
       builder: (ctx) {
         return Dialog(
-          backgroundColor: AppTheme.elevatedSlateSurface,
+          backgroundColor: _cardSlate,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
-            side: const BorderSide(color: AppTheme.slateBorder, width: 1),
+            side: const BorderSide(color: _borderSlate, width: 1.2),
           ),
           child: Padding(
             padding: const EdgeInsets.all(24),
@@ -77,37 +91,69 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                   width: 72,
                   height: 72,
                   decoration: BoxDecoration(
-                    color: AppTheme.emeraldReady.withValues(alpha: 0.16),
+                    color: _emeraldReady.withValues(alpha: 0.16),
                     shape: BoxShape.circle,
+                    border: Border.all(
+                      color: _emeraldReady.withValues(alpha: 0.5),
+                      width: 1.5,
+                    ),
                   ),
                   alignment: Alignment.center,
                   child: const Text('🍲', style: TextStyle(fontSize: 36)),
                 ),
                 const SizedBox(height: 16),
-                Text(
+                const Text(
                   'Masakan Siap Disantap!',
                   textAlign: TextAlign.center,
-                  style: Theme.of(ctx).textTheme.headlineSmall,
+                  style: TextStyle(
+                    fontSize: 19,
+                    fontWeight: FontWeight.w800,
+                    color: _iceWhite,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Selamat menikmati ${widget.recipe.title} hangat buatan sendiri. Hemat uang jajan hari ini!',
+                  'Selamat menikmati ${widget.recipe.title} hangat buatan sendiri. Hemat pengeluaran kos hari ini!',
                   textAlign: TextAlign.center,
-                  style: Theme.of(ctx).textTheme.bodyMedium,
+                  style: const TextStyle(
+                    fontSize: 13.5,
+                    color: _mutedSteel,
+                    height: 1.45,
+                  ),
                 ),
                 const SizedBox(height: 22),
                 SizedBox(
                   width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.of(ctx).pop();
-                      Navigator.of(context).pop();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.emeraldReady,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [_emeraldReady, _skyCyan],
+                      ),
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                    icon: const Icon(Icons.celebration_rounded, size: 18),
-                    label: const Text('Selesai Masak'),
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.of(ctx).pop();
+                        Navigator.of(context).pop();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                      ),
+                      icon: const Icon(
+                        Icons.celebration_rounded,
+                        size: 18,
+                        color: Colors.white,
+                      ),
+                      label: const Text(
+                        'Selesai Masak',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -131,50 +177,46 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
         child: Container(
-          height: MediaQuery.of(context).size.height * 0.88,
+          height: MediaQuery.of(context).size.height * 0.93,
           decoration: const BoxDecoration(
-            color: AppTheme.midnightNavyScaffold,
+            color: _bgNavy,
             borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
             border: Border(
-              top: BorderSide(
-                color: AppTheme.slateBorder,
-                width: 1.2,
-              ),
+              top: BorderSide(color: _borderSlate, width: 1.4),
             ),
           ),
           child: SafeArea(
             top: false,
             child: Column(
               children: [
-                // Top Drag Handle & Header
+                // 1. Top Header + #38BDF8 Smooth Progress Indicator Bar
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 14),
                   child: Column(
                     children: [
+                      // Drag handle
                       Container(
                         width: 44,
-                        height: 5,
+                        height: 4.5,
                         decoration: BoxDecoration(
-                          color: AppTheme.mutedSteelSubtitle.withValues(
-                            alpha: 0.35,
-                          ),
+                          color: _mutedSteel.withValues(alpha: 0.35),
                           borderRadius: BorderRadius.circular(999),
                         ),
                       ),
                       const SizedBox(height: 14),
                       Row(
                         children: [
+                          // Tool Badge (#1E3A8A surface with #60A5FA text)
                           Container(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
+                              horizontal: 11,
                               vertical: 6,
                             ),
                             decoration: BoxDecoration(
-                              color: AppTheme.activeChipSurface,
+                              color: _royalSurface.withValues(alpha: 0.75),
                               borderRadius: BorderRadius.circular(10),
                               border: Border.all(
-                                color: AppTheme.glowingSkyBorder,
-                                width: 1,
+                                color: _softSkyText.withValues(alpha: 0.45),
                               ),
                             ),
                             child: Row(
@@ -182,8 +224,8 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                               children: [
                                 Icon(
                                   widget.recipe.cookingTool.icon,
-                                  size: 15,
-                                  color: AppTheme.glowingSkyBorder,
+                                  size: 14,
+                                  color: _softSkyText,
                                 ),
                                 const SizedBox(width: 6),
                                 Text(
@@ -191,7 +233,7 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                                   style: const TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w800,
-                                    color: AppTheme.iceWhiteTitle,
+                                    color: _softSkyText,
                                   ),
                                 ),
                               ],
@@ -199,16 +241,25 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                           ),
                           const Spacer(),
                           Text(
-                            'Langkah ${_currentStepIndex + 1} dari $totalSteps',
-                            style: Theme.of(context).textTheme.labelLarge,
+                            'Langkah ${_currentStepIndex + 1} / $totalSteps',
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w800,
+                              color: _iceWhite,
+                            ),
                           ),
                           const SizedBox(width: 10),
                           IconButton(
                             onPressed: () => Navigator.of(context).pop(),
-                            icon: const Icon(Icons.close_rounded),
+                            icon: const Icon(
+                              Icons.close_rounded,
+                              color: _iceWhite,
+                              size: 20,
+                            ),
                             style: IconButton.styleFrom(
-                              backgroundColor: AppTheme.elevatedSlateSurface,
-                              padding: const EdgeInsets.all(8),
+                              backgroundColor: _cardSlate,
+                              side: const BorderSide(color: _borderSlate),
+                              padding: const EdgeInsets.all(7),
                               minimumSize: const Size(36, 36),
                             ),
                           ),
@@ -216,7 +267,7 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                       ),
                       const SizedBox(height: 14),
 
-                      // Smooth Progress Indicator Bar
+                      // #38BDF8 Animated Progress Indicator Bar
                       ClipRRect(
                         borderRadius: BorderRadius.circular(999),
                         child: TweenAnimationBuilder<double>(
@@ -227,18 +278,17 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                             return LinearProgressIndicator(
                               value: value,
                               minHeight: 8,
-                              backgroundColor: AppTheme.elevatedSlateVariant,
+                              backgroundColor: _cardSlate,
                               valueColor: const AlwaysStoppedAnimation<Color>(
-                                AppTheme.primarySapphire,
+                                _skyCyan,
                               ),
                             );
                           },
                         ),
                       ),
-
                       const SizedBox(height: 12),
 
-                      // Interactive Step Selector Pills
+                      // Step Selector Pills
                       SizedBox(
                         height: 34,
                         child: ListView.separated(
@@ -253,27 +303,29 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                               child: AnimatedContainer(
                                 duration: const Duration(milliseconds: 220),
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
+                                  horizontal: 13,
                                   vertical: 6,
                                 ),
                                 decoration: BoxDecoration(
                                   gradient: isCurrent
-                                      ? AppTheme.primaryGradient
+                                      ? const LinearGradient(
+                                          colors: [_sapphireBlue, _skyCyan],
+                                        )
                                       : null,
                                   color: isCurrent
                                       ? null
                                       : (isDone
-                                          ? AppTheme.emeraldReady.withValues(
+                                          ? _emeraldReady.withValues(
                                               alpha: 0.16,
                                             )
-                                          : AppTheme.elevatedSlateSurface),
+                                          : _cardSlate),
                                   borderRadius: BorderRadius.circular(999),
                                   border: Border.all(
                                     color: isCurrent
-                                        ? AppTheme.glowingSkyBorder
+                                        ? _skyCyan
                                         : (isDone
-                                            ? AppTheme.emeraldReady
-                                            : AppTheme.slateBorder),
+                                            ? _emeraldReady
+                                            : _borderSlate),
                                   ),
                                 ),
                                 child: Row(
@@ -282,21 +334,21 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                                     if (isDone && !isCurrent) ...[
                                       const Icon(
                                         Icons.check_circle_rounded,
-                                        size: 14,
-                                        color: AppTheme.emeraldReady,
+                                        size: 13.5,
+                                        color: _emeraldReady,
                                       ),
                                       const SizedBox(width: 4),
                                     ],
                                     Text(
-                                      'Step ${index + 1}',
+                                      'Tahap ${index + 1}',
                                       style: TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w700,
                                         color: isCurrent
-                                            ? AppTheme.iceWhiteTitle
+                                            ? _iceWhite
                                             : (isDone
-                                                ? AppTheme.emeraldReady
-                                                : AppTheme.mutedSteelSubtitle),
+                                                ? _emeraldReady
+                                                : _mutedSteel),
                                       ),
                                     ),
                                   ],
@@ -310,9 +362,9 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                   ),
                 ),
 
-                const Divider(height: 1, color: AppTheme.slateBorder),
+                const Divider(height: 1, color: _borderSlate),
 
-                // PageView for Step-by-Step Instructions + Built-in Timer
+                // 2. Full-Screen Dark Navy PageView for Step-by-Step Instructions + Timer
                 Expanded(
                   child: PageView.builder(
                     controller: _pageController,
@@ -324,31 +376,38 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                     itemBuilder: (context, index) {
                       final step = steps[index];
                       return SingleChildScrollView(
-                        padding: const EdgeInsets.fromLTRB(22, 20, 22, 24),
+                        padding: const EdgeInsets.fromLTRB(20, 22, 20, 26),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Large Step Badge + Title
+                            // Step Number Badge + Step Title
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Container(
-                                  width: 42,
-                                  height: 42,
+                                  width: 44,
+                                  height: 44,
                                   decoration: BoxDecoration(
-                                    gradient: AppTheme.primaryGradient,
-                                    borderRadius: BorderRadius.circular(14),
-                                    boxShadow: AppTheme.glowShadow(
-                                      AppTheme.primarySapphire,
-                                      intensity: 0.28,
+                                    gradient: const LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [_sapphireBlue, _skyCyan],
                                     ),
+                                    borderRadius: BorderRadius.circular(14),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: _skyCyan.withValues(alpha: 0.30),
+                                        blurRadius: 14,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
                                   ),
                                   alignment: Alignment.center,
                                   child: Text(
                                     '${step.stepNumber}',
                                     style: const TextStyle(
                                       fontSize: 18,
-                                      fontWeight: FontWeight.w800,
+                                      fontWeight: FontWeight.w900,
                                       color: Colors.white,
                                     ),
                                   ),
@@ -357,40 +416,77 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                                 Expanded(
                                   child: Text(
                                     step.title,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headlineMedium
-                                        ?.copyWith(fontSize: 19.5),
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w800,
+                                      color: _iceWhite,
+                                      letterSpacing: -0.3,
+                                      height: 1.25,
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
                             const SizedBox(height: 20),
 
-                            // Large Readable Instruction Card
+                            // Large Readable Instructions Card (#131B2E surface, #23304E border)
                             Container(
                               width: double.infinity,
-                              padding: const EdgeInsets.all(20),
+                              padding: const EdgeInsets.all(22),
                               decoration: BoxDecoration(
-                                color: AppTheme.elevatedSlateSurface,
+                                color: _cardSlate,
                                 borderRadius: BorderRadius.circular(20),
-                                border: Border.all(color: AppTheme.slateBorder),
-                                boxShadow: AppTheme.softShadow(context),
+                                border: Border.all(
+                                  color: _borderSlate,
+                                  width: 1.2,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.38),
+                                    blurRadius: 20,
+                                    offset: const Offset(0, 8),
+                                  ),
+                                ],
                               ),
-                              child: Text(
-                                step.instruction,
-                                style: Theme.of(context).textTheme.bodyLarge
-                                    ?.copyWith(
-                                      fontSize: 17,
-                                      height: 1.55,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Row(
+                                    children: [
+                                      Icon(
+                                        Icons.menu_book_rounded,
+                                        size: 15,
+                                        color: _skyCyan,
+                                      ),
+                                      SizedBox(width: 6),
+                                      Text(
+                                        'INSTRUKSI MEMASAK',
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w800,
+                                          color: _skyCyan,
+                                          letterSpacing: 0.8,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    step.instruction,
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      height: 1.6,
                                       fontWeight: FontWeight.w500,
+                                      color: _iceWhite,
                                     ),
+                                  ),
+                                ],
                               ),
                             ),
 
                             const SizedBox(height: 18),
 
-                            // Built-in Interactive Countdown Timer Widget (when step has timerSeconds)
+                            // Built-in Interactive Circular/Pill Countdown Timer Widget (Start/Pause/Reset)
                             if (step.timerSeconds != null) ...[
                               _InteractiveStepTimerWidget(
                                 key: ValueKey('timer_${step.stepNumber}'),
@@ -402,26 +498,31 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                               const SizedBox(height: 18),
                             ],
 
-                            // Anak-Kos Pro Tip Card
+                            // Tips Dapur Anak Kos Card
                             Container(
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                color: AppTheme.amberAlmost.withValues(
-                                  alpha: 0.14,
-                                ),
+                                color: _cardSlate,
                                 borderRadius: BorderRadius.circular(18),
                                 border: Border.all(
-                                  color: AppTheme.amberAlmost.withValues(
-                                    alpha: 0.45,
-                                  ),
+                                  color: _amberWarn.withValues(alpha: 0.45),
+                                  width: 1.1,
                                 ),
                               ),
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text(
-                                    '💡',
-                                    style: TextStyle(fontSize: 20),
+                                  Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: _amberWarn.withValues(alpha: 0.16),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: const Icon(
+                                      Icons.tips_and_updates_rounded,
+                                      size: 18,
+                                      color: _amberWarn,
+                                    ),
                                   ),
                                   const SizedBox(width: 12),
                                   Expanded(
@@ -430,22 +531,21 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         const Text(
-                                          'Tips Dapur Anak Kos',
+                                          'Tips Anak Kos',
                                           style: TextStyle(
                                             fontSize: 12.5,
                                             fontWeight: FontWeight.w800,
-                                            color: AppTheme.amberAlmost,
+                                            color: _amberWarn,
                                           ),
                                         ),
                                         const SizedBox(height: 4),
                                         Text(
                                           step.kosTip,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium
-                                              ?.copyWith(
-                                                color: AppTheme.iceWhiteTitle,
-                                              ),
+                                          style: const TextStyle(
+                                            fontSize: 13.5,
+                                            color: _mutedSteel,
+                                            height: 1.45,
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -460,13 +560,13 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                   ),
                 ),
 
-                // Bottom Navigation Controls
+                // 3. Bottom Step Navigation Bar
                 Container(
                   padding: const EdgeInsets.fromLTRB(20, 14, 20, 18),
                   decoration: const BoxDecoration(
-                    color: AppTheme.elevatedSlateSurface,
+                    color: _cardSlate,
                     border: Border(
-                      top: BorderSide(color: AppTheme.slateBorder),
+                      top: BorderSide(color: _borderSlate, width: 1.2),
                     ),
                   ),
                   child: Row(
@@ -475,8 +575,8 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                         OutlinedButton.icon(
                           onPressed: () => _goToStep(_currentStepIndex - 1),
                           style: OutlinedButton.styleFrom(
-                            foregroundColor: AppTheme.iceWhiteTitle,
-                            side: const BorderSide(color: AppTheme.slateBorder),
+                            foregroundColor: _iceWhite,
+                            side: const BorderSide(color: _borderSlate),
                             padding: const EdgeInsets.symmetric(
                               horizontal: 18,
                               vertical: 15,
@@ -496,13 +596,22 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                       Expanded(
                         child: DecoratedBox(
                           decoration: BoxDecoration(
-                            gradient: _currentStepIndex == totalSteps - 1
-                                ? null
-                                : AppTheme.primaryGradient,
-                            color: _currentStepIndex == totalSteps - 1
-                                ? AppTheme.emeraldReady
-                                : null,
+                            gradient: LinearGradient(
+                              colors: _currentStepIndex == totalSteps - 1
+                                  ? const [_emeraldReady, _skyCyan]
+                                  : const [_sapphireBlue, _skyCyan],
+                            ),
                             borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: (_currentStepIndex == totalSteps - 1
+                                        ? _emeraldReady
+                                        : _sapphireBlue)
+                                    .withValues(alpha: 0.38),
+                                blurRadius: 16,
+                                offset: const Offset(0, 5),
+                              ),
+                            ],
                           ),
                           child: ElevatedButton.icon(
                             onPressed: _completeOrAdvance,
@@ -519,11 +628,17 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                                   ? Icons.check_circle_rounded
                                   : Icons.arrow_forward_rounded,
                               size: 19,
+                              color: Colors.white,
                             ),
                             label: Text(
                               _currentStepIndex == totalSteps - 1
                                   ? 'Selesai Masak!'
                                   : 'Langkah Berikutnya',
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),
@@ -540,7 +655,7 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
   }
 }
 
-/// Interactive Countdown Timer Widget with Circular Ring, Play/Pause, Reset & +30s
+/// Interactive Circular & Pill Countdown Timer Widget (Start / Pause / Reset)
 class _InteractiveStepTimerWidget extends StatefulWidget {
   final int initialSeconds;
   final String label;
@@ -558,6 +673,15 @@ class _InteractiveStepTimerWidget extends StatefulWidget {
 
 class _InteractiveStepTimerWidgetState
     extends State<_InteractiveStepTimerWidget> {
+  static const Color _bgNavy = Color(0xFF090D16);
+  static const Color _cardSlate = Color(0xFF131B2E);
+  static const Color _borderSlate = Color(0xFF23304E);
+  static const Color _skyCyan = Color(0xFF38BDF8);
+  static const Color _sapphireBlue = Color(0xFF2563EB);
+  static const Color _emeraldReady = Color(0xFF10B981);
+  static const Color _iceWhite = Color(0xFFF8FAFC);
+  static const Color _mutedSteel = Color(0xFF94A3B8);
+
   late int _totalSeconds;
   late int _remainingSeconds;
   bool _isRunning = false;
@@ -642,203 +766,221 @@ class _InteractiveStepTimerWidgetState
         ? 0.0
         : (_remainingSeconds / _totalSeconds).clamp(0.0, 1.0);
 
-    final Color activeColor = _isFinished
-        ? AppTheme.emeraldReady
-        : (_isRunning ? AppTheme.primarySapphire : AppTheme.amberAlmost);
+    final Color activeColor = _isFinished ? _emeraldReady : _skyCyan;
 
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 280),
+      duration: const Duration(milliseconds: 260),
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: AppTheme.elevatedSlateSurface,
+        color: _cardSlate,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: _isRunning || _isFinished
-              ? activeColor
-              : AppTheme.slateBorder,
-          width: _isRunning || _isFinished ? 1.6 : 1.0,
+          color: _isRunning || _isFinished ? activeColor : _borderSlate,
+          width: _isRunning || _isFinished ? 1.5 : 1.0,
         ),
         boxShadow: _isRunning
-            ? AppTheme.glowShadow(activeColor, intensity: 0.22)
-            : AppTheme.softShadow(context),
-      ),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              // Circular Custom-Painted Timer Ring
-              SizedBox(
-                width: 82,
-                height: 82,
-                child: CustomPaint(
-                  painter: _CircularTimerPainter(
-                    progress: ratio,
-                    color: activeColor,
-                    trackColor: AppTheme.elevatedSlateVariant,
-                  ),
-                  child: Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          _formatMinSec(_remainingSeconds),
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w800,
-                            color: AppTheme.iceWhiteTitle,
-                            fontFeatures: [FontFeature.tabularFigures()],
-                          ),
-                        ),
-                        Text(
-                          _isFinished
-                              ? 'SELESAI!'
-                              : (_isRunning ? 'AKTIF' : 'SIAP'),
-                          style: TextStyle(
-                            fontSize: 9.5,
-                            fontWeight: FontWeight.w800,
-                            color: activeColor,
-                            letterSpacing: 0.6,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+            ? [
+                BoxShadow(
+                  color: activeColor.withValues(alpha: 0.22),
+                  blurRadius: 18,
+                  offset: const Offset(0, 6),
                 ),
+              ]
+            : null,
+      ),
+      child: Row(
+        children: [
+          // Circular Countdown Gauge
+          SizedBox(
+            width: 84,
+            height: 84,
+            child: CustomPaint(
+              painter: _CircularTimerPainter(
+                progress: ratio,
+                color: activeColor,
+                trackColor: _borderSlate,
               ),
-              const SizedBox(width: 16),
-
-              // Timer Info & Controls
-              Expanded(
+              child: Center(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.timer_outlined,
-                          size: 16,
-                          color: activeColor,
-                        ),
-                        const SizedBox(width: 5),
-                        Expanded(
-                          child: Text(
-                            widget.label,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context).textTheme.titleMedium
-                                ?.copyWith(fontWeight: FontWeight.w700),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
                     Text(
-                      _isFinished
-                          ? 'Waktu habis! Saatnya lanjut ke tahap berikutnya.'
-                          : (_isRunning
-                                ? 'Timer sedang berjalan...'
-                                : 'Ketuk Mulai untuk menghitung mundur.'),
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontSize: 12.5,
+                      _formatMinSec(_remainingSeconds),
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: _iceWhite,
+                        fontFeatures: [FontFeature.tabularFigures()],
                       ),
                     ),
-                    const SizedBox(height: 12),
-
-                    // Action Buttons Row
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        // Play / Pause Button
-                        InkWell(
-                          onTap: _toggleTimer,
-                          borderRadius: BorderRadius.circular(12),
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 14,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              color: activeColor,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  _isFinished
-                                      ? Icons.replay_rounded
-                                      : (_isRunning
-                                            ? Icons.pause_rounded
-                                            : Icons.play_arrow_rounded),
-                                  size: 17,
-                                  color: Colors.white,
-                                ),
-                                const SizedBox(width: 5),
-                                Text(
-                                  _isFinished
-                                      ? 'Ulangi'
-                                      : (_isRunning ? 'Jeda' : 'Mulai Timer'),
-                                  style: const TextStyle(
-                                    fontSize: 12.5,
-                                    fontWeight: FontWeight.w800,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-
-                        // +30s Quick Add
-                        InkWell(
-                          onTap: _addThirtySeconds,
-                          borderRadius: BorderRadius.circular(12),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppTheme.elevatedSlateVariant,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: const Text(
-                              '+30 dtk',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                                color: AppTheme.iceWhiteTitle,
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        // Reset
-                        if (_remainingSeconds != widget.initialSeconds)
-                          InkWell(
-                            onTap: _resetTimer,
-                            borderRadius: BorderRadius.circular(12),
-                            child: Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: AppTheme.elevatedSlateVariant,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: const Icon(
-                                Icons.restart_alt_rounded,
-                                size: 16,
-                                color: AppTheme.mutedSteelSubtitle,
-                              ),
-                            ),
-                          ),
-                      ],
+                    Text(
+                      _isFinished
+                          ? 'SELESAI'
+                          : (_isRunning ? 'BERJALAN' : 'TIMER'),
+                      style: TextStyle(
+                        fontSize: 9.5,
+                        fontWeight: FontWeight.w800,
+                        color: activeColor,
+                        letterSpacing: 0.5,
+                      ),
                     ),
                   ],
                 ),
               ),
-            ],
+            ),
+          ),
+          const SizedBox(width: 16),
+
+          // Pill Controls (Start / Pause / Reset / +30s)
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.timer_outlined, size: 15, color: activeColor),
+                    const SizedBox(width: 5),
+                    Expanded(
+                      child: Text(
+                        widget.label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 14.5,
+                          fontWeight: FontWeight.w800,
+                          color: _iceWhite,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  _isFinished
+                      ? 'Waktu selesai! Lanjut ke langkah berikutnya.'
+                      : (_isRunning
+                            ? 'Menghitung mundur waktu memasak...'
+                            : 'Gunakan timer agar masakan matang pas.'),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: _mutedSteel,
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                // Pill Buttons: Start/Pause + Reset + +30s
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    // Start / Pause Pill Button
+                    GestureDetector(
+                      onTap: _toggleTimer,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: _isFinished
+                              ? const LinearGradient(
+                                  colors: [_emeraldReady, _skyCyan],
+                                )
+                              : const LinearGradient(
+                                  colors: [_sapphireBlue, _skyCyan],
+                                ),
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              _isFinished
+                                  ? Icons.replay_rounded
+                                  : (_isRunning
+                                        ? Icons.pause_rounded
+                                        : Icons.play_arrow_rounded),
+                              size: 16,
+                              color: Colors.white,
+                            ),
+                            const SizedBox(width: 5),
+                            Text(
+                              _isFinished
+                                  ? 'Ulangi'
+                                  : (_isRunning ? 'Pause' : 'Start'),
+                              style: const TextStyle(
+                                fontSize: 12.5,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    // Reset Pill Button
+                    GestureDetector(
+                      onTap: _resetTimer,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _bgNavy,
+                          borderRadius: BorderRadius.circular(999),
+                          border: Border.all(color: _borderSlate),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.restart_alt_rounded,
+                              size: 15,
+                              color: _mutedSteel,
+                            ),
+                            SizedBox(width: 4),
+                            Text(
+                              'Reset',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: _iceWhite,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    // +30s Boost Pill
+                    GestureDetector(
+                      onTap: _addThirtySeconds,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _bgNavy,
+                          borderRadius: BorderRadius.circular(999),
+                          border: Border.all(color: _borderSlate),
+                        ),
+                        child: const Text(
+                          '+30s',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: _skyCyan,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ],
       ),
