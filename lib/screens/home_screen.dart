@@ -12,8 +12,8 @@ import '../widgets/recipe_matcher_card.dart';
 import 'recipe_detail_screen.dart';
 
 /// Main Dashboard & Space-Saving "Kulkas Virtual" Home Screen for PantryKos.
-/// Designed with the Elegant Midnight Navy Dark Theme (#0A0F1D) and an
-/// "Above-the-Fold" layout so Recipe Matcher Cards are immediately visible.
+/// Designed with the Clean Culinary Light Theme (#F6FAF7, #FFFFFF, #14532D, #DCFCE7)
+/// and an "Above-the-Fold" layout so Recipe Matcher Cards are immediately visible.
 class HomeScreen extends StatefulWidget {
   final PantryController controller;
   final VoidCallback onOpenScanner;
@@ -133,15 +133,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     filter: ImageFilter.blur(sigmaX: 22, sigmaY: 22),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: AppTheme.elevatedSlateSurface.withValues(
-                          alpha: 0.94,
-                        ),
+                        color: AppTheme.pureWhite.withValues(alpha: 0.96),
                         borderRadius: const BorderRadius.vertical(
                           top: Radius.circular(28),
                         ),
                         border: const Border(
                           top: BorderSide(
-                            color: AppTheme.slateBorder,
+                            color: AppTheme.borderMint,
                             width: 1.2,
                           ),
                         ),
@@ -160,8 +158,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     width: 42,
                                     height: 5,
                                     decoration: BoxDecoration(
-                                      color: AppTheme.mutedSteelSubtitle
-                                          .withValues(alpha: 0.35),
+                                      color: AppTheme.borderSlateLight,
                                       borderRadius: BorderRadius.circular(999),
                                     ),
                                   ),
@@ -181,15 +178,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                             style: TextStyle(
                                               fontSize: 18,
                                               fontWeight: FontWeight.w800,
-                                              color: AppTheme.iceWhiteTitle,
+                                              color: AppTheme.textForestCharcoal,
                                             ),
                                           ),
                                           Text(
                                             '${_activeIngredientIds.length} dari ${MockPantryData.allIngredients.length} bahan tersedia di kos',
                                             style: const TextStyle(
                                               fontSize: 12.5,
-                                              color:
-                                                  AppTheme.mutedSteelSubtitle,
+                                              color: AppTheme.textSageGrey,
                                             ),
                                           ),
                                         ],
@@ -229,7 +225,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         style: const TextStyle(
                                           fontSize: 12.5,
                                           fontWeight: FontWeight.w700,
-                                          color: AppTheme.glowingSkyBorder,
+                                          color: AppTheme.forestEmerald,
                                         ),
                                       ),
                                     ),
@@ -244,23 +240,22 @@ class _HomeScreenState extends State<HomeScreen> {
                                   },
                                   style: const TextStyle(
                                     fontSize: 13.5,
-                                    color: AppTheme.iceWhiteTitle,
+                                    color: AppTheme.textForestCharcoal,
                                   ),
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                     hintText:
                                         'Cari bahan (misal: Telur, Sosis, Keju, Cabai)...',
-                                    hintStyle: const TextStyle(
+                                    hintStyle: TextStyle(
                                       fontSize: 13,
-                                      color: AppTheme.mutedSteelSubtitle,
+                                      color: AppTheme.textSageGrey,
                                     ),
-                                    prefixIcon: const Icon(
+                                    prefixIcon: Icon(
                                       Icons.search_rounded,
                                       size: 19,
-                                      color: AppTheme.glowingSkyBorder,
+                                      color: AppTheme.forestEmerald,
                                     ),
-                                    fillColor: AppTheme.midnightNavyScaffold
-                                        .withValues(alpha: 0.7),
-                                    contentPadding: const EdgeInsets.symmetric(
+                                    fillColor: AppTheme.scaffoldMintWhite,
+                                    contentPadding: EdgeInsets.symmetric(
                                       horizontal: 14,
                                       vertical: 11,
                                     ),
@@ -296,19 +291,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                               vertical: 7,
                                             ),
                                             decoration: BoxDecoration(
-                                              gradient: selected
-                                                  ? AppTheme.primaryGradient
-                                                  : null,
                                               color: selected
-                                                  ? null
-                                                  : AppTheme
-                                                        .midnightNavyScaffold,
+                                                  ? AppTheme.forestEmerald
+                                                  : AppTheme.pureWhite,
                                               borderRadius:
                                                   BorderRadius.circular(999),
                                               border: Border.all(
                                                 color: selected
-                                                    ? AppTheme.glowingSkyBorder
-                                                    : AppTheme.slateBorder,
+                                                    ? AppTheme.forestEmerald
+                                                    : AppTheme.borderSlateLight,
                                               ),
                                             ),
                                             child: Row(
@@ -318,9 +309,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   cat.icon,
                                                   size: 14,
                                                   color: selected
-                                                      ? AppTheme.iceWhiteTitle
-                                                      : AppTheme
-                                                            .mutedSteelSubtitle,
+                                                      ? AppTheme.pureWhite
+                                                      : AppTheme.textSageGrey,
                                                 ),
                                                 const SizedBox(width: 6),
                                                 Text(
@@ -331,9 +321,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         ? FontWeight.w700
                                                         : FontWeight.w600,
                                                     color: selected
-                                                        ? AppTheme.iceWhiteTitle
+                                                        ? AppTheme.pureWhite
                                                         : AppTheme
-                                                              .mutedSteelSubtitle,
+                                                              .textForestCharcoal,
                                                   ),
                                                 ),
                                               ],
@@ -350,7 +340,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                           const Divider(
                             height: 16,
-                            color: AppTheme.slateBorder,
+                            color: AppTheme.borderNeutral,
                           ),
 
                           // Scrollable Ingredient Chips Grid/Wrap
@@ -387,9 +377,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           Container(
                             padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
                             decoration: const BoxDecoration(
-                              color: AppTheme.midnightNavyScaffold,
+                              color: AppTheme.pureWhite,
                               border: Border(
-                                top: BorderSide(color: AppTheme.slateBorder),
+                                top: BorderSide(color: AppTheme.borderNeutral),
                               ),
                             ),
                             child: SafeArea(
@@ -401,8 +391,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     gradient: AppTheme.primaryGradient,
                                     borderRadius: BorderRadius.circular(16),
                                     boxShadow: AppTheme.glowShadow(
-                                      AppTheme.primarySapphire,
-                                      intensity: 0.32,
+                                      AppTheme.forestEmerald,
+                                      alpha: 0.24,
                                     ),
                                   ),
                                   child: ElevatedButton.icon(
@@ -519,7 +509,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final dockIngredients = _dockOrderedIngredients;
 
     return Scaffold(
-      backgroundColor: AppTheme.midnightNavyScaffold,
+      backgroundColor: AppTheme.scaffoldMintWhite,
       body: CustomScrollView(
         key: const PageStorageKey<String>('home_scroll'),
         physics: const BouncingScrollPhysics(),
@@ -529,7 +519,7 @@ class _HomeScreenState extends State<HomeScreen> {
             expandedHeight: 132,
             pinned: true,
             stretch: true,
-            backgroundColor: AppTheme.midnightNavyScaffold,
+            backgroundColor: AppTheme.scaffoldMintWhite,
             surfaceTintColor: Colors.transparent,
             titleSpacing: 16,
             title: const PantryKosBrandLockup(),
@@ -547,19 +537,19 @@ class _HomeScreenState extends State<HomeScreen> {
                         onChanged: (val) => setState(() => _searchQuery = val),
                         style: const TextStyle(
                           fontSize: 13.5,
-                          color: AppTheme.iceWhiteTitle,
+                          color: AppTheme.textForestCharcoal,
                         ),
                         decoration: InputDecoration(
                           hintText:
                               'Cari resep "Mawut", "Omelet", atau bahan...',
                           hintStyle: const TextStyle(
                             fontSize: 12.5,
-                            color: AppTheme.mutedSteelSubtitle,
+                            color: AppTheme.textSageGrey,
                           ),
                           prefixIcon: const Icon(
                             Icons.search_rounded,
                             size: 19,
-                            color: AppTheme.glowingSkyBorder,
+                            color: AppTheme.forestEmerald,
                           ),
                           suffixIcon: _searchQuery.isNotEmpty
                               ? IconButton(
@@ -570,7 +560,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   icon: const Icon(
                                     Icons.close_rounded,
                                     size: 17,
-                                    color: AppTheme.mutedSteelSubtitle,
+                                    color: AppTheme.textSageGrey,
                                   ),
                                 )
                               : null,
@@ -596,13 +586,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Container(
                       padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
                       decoration: BoxDecoration(
-                        color: AppTheme.elevatedSlateSurface.withValues(
-                          alpha: 0.92,
-                        ),
+                        color: AppTheme.pureWhite,
                         borderRadius: BorderRadius.circular(18),
                         border: Border.all(
-                          color: AppTheme.slateBorder,
-                          width: 1.0,
+                          color: AppTheme.borderMint,
+                          width: 1.2,
                         ),
                         boxShadow: AppTheme.softShadow(context),
                       ),
@@ -616,7 +604,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               const Icon(
                                 Icons.kitchen_rounded,
                                 size: 15,
-                                color: AppTheme.glowingSkyBorder,
+                                color: AppTheme.forestEmerald,
                               ),
                               const SizedBox(width: 6),
                               Expanded(
@@ -627,7 +615,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   style: const TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w800,
-                                    color: AppTheme.iceWhiteTitle,
+                                    color: AppTheme.textForestCharcoal,
                                     letterSpacing: -0.2,
                                   ),
                                 ),
@@ -645,7 +633,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     style: TextStyle(
                                       fontSize: 12.5,
                                       fontWeight: FontWeight.w800,
-                                      color: AppTheme.glowingSkyBorder,
+                                      color: AppTheme.forestEmerald,
                                     ),
                                   ),
                                 ),
@@ -710,9 +698,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(26),
                   decoration: BoxDecoration(
-                    color: AppTheme.elevatedSlateSurface,
+                    color: AppTheme.pureWhite,
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: AppTheme.slateBorder),
+                    border: Border.all(color: AppTheme.borderMint),
+                    boxShadow: AppTheme.softShadow(context),
                   ),
                   child: Column(
                     children: [
@@ -739,9 +728,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           });
                         },
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: AppTheme.glowingSkyBorder,
+                          foregroundColor: AppTheme.forestEmerald,
                           side: const BorderSide(
-                            color: AppTheme.glowingSkyBorder,
+                            color: AppTheme.mintLeaf,
                           ),
                         ),
                         icon: const Icon(Icons.refresh_rounded, size: 18),

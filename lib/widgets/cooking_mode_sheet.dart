@@ -4,12 +4,12 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../models/recipe_model.dart';
+import '../theme/app_theme.dart';
 
-/// Full-screen Dark Navy (#090D16) Step-by-Step Cooking Mode Sheet.
-/// Features a PageView, a #38BDF8 animated progress indicator bar,
-/// large readable instructions in #131B2E cards with #23304E borders,
-/// and a built-in interactive circular/pill countdown timer widget
-/// (Start / Pause / Reset).
+/// Full-screen Pure White (#FFFFFF) Step-by-Step Cooking Mode Sheet.
+/// Features a PageView, a #22C55E animated progress indicator bar,
+/// readable instruction cards, and a built-in interactive countdown timer
+/// with Dark Green (#14532D) controls (Start / Pause / Reset / +30s).
 class CookingModeSheet extends StatefulWidget {
   final RecipeModel recipe;
 
@@ -20,18 +20,18 @@ class CookingModeSheet extends StatefulWidget {
 }
 
 class _CookingModeSheetState extends State<CookingModeSheet> {
-  // Exact Step 3 Midnight Navy Theme Palette
-  static const Color _bgNavy = Color(0xFF090D16);
-  static const Color _cardSlate = Color(0xFF131B2E);
-  static const Color _borderSlate = Color(0xFF23304E);
-  static const Color _skyCyan = Color(0xFF38BDF8);
-  static const Color _sapphireBlue = Color(0xFF2563EB);
-  static const Color _royalSurface = Color(0xFF1E3A8A);
-  static const Color _softSkyText = Color(0xFF60A5FA);
-  static const Color _emeraldReady = Color(0xFF10B981);
-  static const Color _amberWarn = Color(0xFFF59E0B);
-  static const Color _iceWhite = Color(0xFFF8FAFC);
-  static const Color _mutedSteel = Color(0xFF94A3B8);
+  static const Color _sheetWhite = AppTheme.pureWhite;
+  static const Color _cardSoftMint = AppTheme.scaffoldMintWhite;
+  static const Color _borderNeutral = AppTheme.borderNeutral;
+  static const Color _mintLeaf = AppTheme.mintLeaf;
+  static const Color _forestPrimary = AppTheme.forestEmerald;
+  static const Color _botanicalGreen = AppTheme.botanicalGreen;
+  static const Color _sageMint = AppTheme.sageMint;
+  static const Color _amberText = AppTheme.almostText;
+  static const Color _amberPill = AppTheme.almostPill;
+  static const Color _amberBorder = AppTheme.almostBorder;
+  static const Color _textPrimary = AppTheme.textForestCharcoal;
+  static const Color _textSecondary = AppTheme.textSageGrey;
 
   late final PageController _pageController;
   int _currentStepIndex = 0;
@@ -77,10 +77,10 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
       context: context,
       builder: (ctx) {
         return Dialog(
-          backgroundColor: _cardSlate,
+          backgroundColor: _sheetWhite,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
-            side: const BorderSide(color: _borderSlate, width: 1.2),
+            side: const BorderSide(color: AppTheme.borderMint, width: 1.2),
           ),
           child: Padding(
             padding: const EdgeInsets.all(24),
@@ -91,10 +91,10 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                   width: 72,
                   height: 72,
                   decoration: BoxDecoration(
-                    color: _emeraldReady.withValues(alpha: 0.16),
+                    color: _sageMint,
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: _emeraldReady.withValues(alpha: 0.5),
+                      color: _mintLeaf,
                       width: 1.5,
                     ),
                   ),
@@ -108,7 +108,7 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                   style: TextStyle(
                     fontSize: 19,
                     fontWeight: FontWeight.w800,
-                    color: _iceWhite,
+                    color: _textPrimary,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -117,7 +117,7 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontSize: 13.5,
-                    color: _mutedSteel,
+                    color: _textSecondary,
                     height: 1.45,
                   ),
                 ),
@@ -126,9 +126,7 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                   width: double.infinity,
                   child: DecoratedBox(
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [_emeraldReady, _skyCyan],
-                      ),
+                      color: _forestPrimary,
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: ElevatedButton.icon(
@@ -147,7 +145,7 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                         color: Colors.white,
                       ),
                       label: const Text(
-                        'Selesai Masak',
+                        'Selesai Memasak',
                         style: TextStyle(
                           fontWeight: FontWeight.w800,
                           color: Colors.white,
@@ -179,17 +177,17 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
         child: Container(
           height: MediaQuery.of(context).size.height * 0.93,
           decoration: const BoxDecoration(
-            color: _bgNavy,
+            color: _sheetWhite,
             borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
             border: Border(
-              top: BorderSide(color: _borderSlate, width: 1.4),
+              top: BorderSide(color: AppTheme.borderMint, width: 1.4),
             ),
           ),
           child: SafeArea(
             top: false,
             child: Column(
               children: [
-                // 1. Top Header + #38BDF8 Smooth Progress Indicator Bar
+                // 1. Top Header + #22C55E Smooth Progress Indicator Bar
                 Padding(
                   padding: const EdgeInsets.fromLTRB(20, 12, 20, 14),
                   child: Column(
@@ -199,14 +197,14 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                         width: 44,
                         height: 4.5,
                         decoration: BoxDecoration(
-                          color: _mutedSteel.withValues(alpha: 0.35),
+                          color: AppTheme.borderSlateLight,
                           borderRadius: BorderRadius.circular(999),
                         ),
                       ),
                       const SizedBox(height: 14),
                       Row(
                         children: [
-                          // Tool Badge (#1E3A8A surface with #60A5FA text)
+                          // Tool Badge (#DCFCE7 surface with #14532D text)
                           Flexible(
                             child: Container(
                               padding: const EdgeInsets.symmetric(
@@ -214,10 +212,10 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                                 vertical: 6,
                               ),
                               decoration: BoxDecoration(
-                                color: _royalSurface.withValues(alpha: 0.75),
+                                color: _sageMint,
                                 borderRadius: BorderRadius.circular(10),
                                 border: Border.all(
-                                  color: _softSkyText.withValues(alpha: 0.45),
+                                  color: _mintLeaf.withValues(alpha: 0.55),
                                 ),
                               ),
                               child: Row(
@@ -226,7 +224,7 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                                   Icon(
                                     widget.recipe.cookingTool.icon,
                                     size: 14,
-                                    color: _softSkyText,
+                                    color: _forestPrimary,
                                   ),
                                   const SizedBox(width: 6),
                                   Flexible(
@@ -237,7 +235,7 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                                       style: const TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w800,
-                                        color: _softSkyText,
+                                        color: _forestPrimary,
                                       ),
                                     ),
                                   ),
@@ -252,7 +250,7 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                             style: const TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w800,
-                              color: _iceWhite,
+                              color: _textPrimary,
                             ),
                           ),
                           const SizedBox(width: 10),
@@ -260,12 +258,12 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                             onPressed: () => Navigator.of(context).pop(),
                             icon: const Icon(
                               Icons.close_rounded,
-                              color: _iceWhite,
+                              color: _textPrimary,
                               size: 20,
                             ),
                             style: IconButton.styleFrom(
-                              backgroundColor: _cardSlate,
-                              side: const BorderSide(color: _borderSlate),
+                              backgroundColor: _cardSoftMint,
+                              side: const BorderSide(color: _borderNeutral),
                               padding: const EdgeInsets.all(7),
                               minimumSize: const Size(36, 36),
                             ),
@@ -274,7 +272,7 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                       ),
                       const SizedBox(height: 14),
 
-                      // #38BDF8 Animated Progress Indicator Bar
+                      // #22C55E Animated Progress Indicator Bar
                       ClipRRect(
                         borderRadius: BorderRadius.circular(999),
                         child: TweenAnimationBuilder<double>(
@@ -285,9 +283,9 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                             return LinearProgressIndicator(
                               value: value,
                               minHeight: 8,
-                              backgroundColor: _cardSlate,
+                              backgroundColor: AppTheme.shimmerBase,
                               valueColor: const AlwaysStoppedAnimation<Color>(
-                                _skyCyan,
+                                _mintLeaf,
                               ),
                             );
                           },
@@ -314,25 +312,16 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                                   vertical: 6,
                                 ),
                                 decoration: BoxDecoration(
-                                  gradient: isCurrent
-                                      ? const LinearGradient(
-                                          colors: [_sapphireBlue, _skyCyan],
-                                        )
-                                      : null,
                                   color: isCurrent
-                                      ? null
-                                      : (isDone
-                                          ? _emeraldReady.withValues(
-                                              alpha: 0.16,
-                                            )
-                                          : _cardSlate),
+                                      ? _forestPrimary
+                                      : (isDone ? _sageMint : _sheetWhite),
                                   borderRadius: BorderRadius.circular(999),
                                   border: Border.all(
                                     color: isCurrent
-                                        ? _skyCyan
+                                        ? _forestPrimary
                                         : (isDone
-                                            ? _emeraldReady
-                                            : _borderSlate),
+                                            ? _mintLeaf
+                                            : AppTheme.borderSlateLight),
                                   ),
                                 ),
                                 child: Row(
@@ -342,7 +331,7 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                                       const Icon(
                                         Icons.check_circle_rounded,
                                         size: 13.5,
-                                        color: _emeraldReady,
+                                        color: _forestPrimary,
                                       ),
                                       const SizedBox(width: 4),
                                     ],
@@ -352,10 +341,10 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                                         fontSize: 12,
                                         fontWeight: FontWeight.w700,
                                         color: isCurrent
-                                            ? _iceWhite
+                                            ? Colors.white
                                             : (isDone
-                                                ? _emeraldReady
-                                                : _mutedSteel),
+                                                ? _forestPrimary
+                                                : _textSecondary),
                                       ),
                                     ),
                                   ],
@@ -369,9 +358,9 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                   ),
                 ),
 
-                const Divider(height: 1, color: _borderSlate),
+                const Divider(height: 1, color: _borderNeutral),
 
-                // 2. Full-Screen Dark Navy PageView for Step-by-Step Instructions + Timer
+                // 2. Full-Screen Clean White PageView for Step-by-Step Instructions + Timer
                 Expanded(
                   child: PageView.builder(
                     controller: _pageController,
@@ -398,13 +387,15 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                                     gradient: const LinearGradient(
                                       begin: Alignment.topLeft,
                                       end: Alignment.bottomRight,
-                                      colors: [_sapphireBlue, _skyCyan],
+                                      colors: [_forestPrimary, _botanicalGreen],
                                     ),
                                     borderRadius: BorderRadius.circular(14),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: _skyCyan.withValues(alpha: 0.30),
-                                        blurRadius: 14,
+                                        color: _forestPrimary.withValues(
+                                          alpha: 0.22,
+                                        ),
+                                        blurRadius: 12,
                                         offset: const Offset(0, 4),
                                       ),
                                     ],
@@ -426,7 +417,7 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                                     style: const TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.w800,
-                                      color: _iceWhite,
+                                      color: _textPrimary,
                                       letterSpacing: -0.3,
                                       height: 1.25,
                                     ),
@@ -436,24 +427,18 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                             ),
                             const SizedBox(height: 20),
 
-                            // Large Readable Instructions Card (#131B2E surface, #23304E border)
+                            // Large Readable Instructions Card
                             Container(
                               width: double.infinity,
                               padding: const EdgeInsets.all(22),
                               decoration: BoxDecoration(
-                                color: _cardSlate,
+                                color: _cardSoftMint,
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
-                                  color: _borderSlate,
+                                  color: AppTheme.borderMint,
                                   width: 1.2,
                                 ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withValues(alpha: 0.38),
-                                    blurRadius: 20,
-                                    offset: const Offset(0, 8),
-                                  ),
-                                ],
+                                boxShadow: AppTheme.softShadow(context),
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -463,7 +448,7 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                                       Icon(
                                         Icons.menu_book_rounded,
                                         size: 15,
-                                        color: _skyCyan,
+                                        color: _forestPrimary,
                                       ),
                                       SizedBox(width: 6),
                                       Text(
@@ -471,7 +456,7 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                                         style: TextStyle(
                                           fontSize: 11,
                                           fontWeight: FontWeight.w800,
-                                          color: _skyCyan,
+                                          color: _forestPrimary,
                                           letterSpacing: 0.8,
                                         ),
                                       ),
@@ -484,7 +469,7 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                                       fontSize: 18,
                                       height: 1.6,
                                       fontWeight: FontWeight.w500,
-                                      color: _iceWhite,
+                                      color: _textPrimary,
                                     ),
                                   ),
                                 ],
@@ -509,10 +494,10 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                             Container(
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                color: _cardSlate,
+                                color: _amberPill,
                                 borderRadius: BorderRadius.circular(18),
                                 border: Border.all(
-                                  color: _amberWarn.withValues(alpha: 0.45),
+                                  color: _amberBorder,
                                   width: 1.1,
                                 ),
                               ),
@@ -522,13 +507,13 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                                   Container(
                                     padding: const EdgeInsets.all(8),
                                     decoration: BoxDecoration(
-                                      color: _amberWarn.withValues(alpha: 0.16),
+                                      color: _sheetWhite,
                                       borderRadius: BorderRadius.circular(10),
                                     ),
                                     child: const Icon(
                                       Icons.tips_and_updates_rounded,
                                       size: 18,
-                                      color: _amberWarn,
+                                      color: _amberText,
                                     ),
                                   ),
                                   const SizedBox(width: 12),
@@ -542,7 +527,7 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                                           style: TextStyle(
                                             fontSize: 12.5,
                                             fontWeight: FontWeight.w800,
-                                            color: _amberWarn,
+                                            color: _amberText,
                                           ),
                                         ),
                                         const SizedBox(height: 4),
@@ -550,7 +535,7 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                                           step.kosTip,
                                           style: const TextStyle(
                                             fontSize: 13.5,
-                                            color: _mutedSteel,
+                                            color: _textPrimary,
                                             height: 1.45,
                                           ),
                                         ),
@@ -571,9 +556,9 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                 Container(
                   padding: const EdgeInsets.fromLTRB(20, 14, 20, 18),
                   decoration: const BoxDecoration(
-                    color: _cardSlate,
+                    color: _sheetWhite,
                     border: Border(
-                      top: BorderSide(color: _borderSlate, width: 1.2),
+                      top: BorderSide(color: AppTheme.borderMint, width: 1.2),
                     ),
                   ),
                   child: Row(
@@ -582,8 +567,10 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                         OutlinedButton.icon(
                           onPressed: () => _goToStep(_currentStepIndex - 1),
                           style: OutlinedButton.styleFrom(
-                            foregroundColor: _iceWhite,
-                            side: const BorderSide(color: _borderSlate),
+                            foregroundColor: _textPrimary,
+                            side: const BorderSide(
+                              color: AppTheme.borderSlateLight,
+                            ),
                             padding: const EdgeInsets.symmetric(
                               horizontal: 18,
                               vertical: 15,
@@ -603,18 +590,11 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                       Expanded(
                         child: DecoratedBox(
                           decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: _currentStepIndex == totalSteps - 1
-                                  ? const [_emeraldReady, _skyCyan]
-                                  : const [_sapphireBlue, _skyCyan],
-                            ),
+                            color: _forestPrimary,
                             borderRadius: BorderRadius.circular(16),
                             boxShadow: [
                               BoxShadow(
-                                color: (_currentStepIndex == totalSteps - 1
-                                        ? _emeraldReady
-                                        : _sapphireBlue)
-                                    .withValues(alpha: 0.38),
+                                color: _forestPrimary.withValues(alpha: 0.28),
                                 blurRadius: 16,
                                 offset: const Offset(0, 5),
                               ),
@@ -639,7 +619,7 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                             ),
                             label: Text(
                               _currentStepIndex == totalSteps - 1
-                                  ? 'Selesai Masak!'
+                                  ? 'Selesai Memasak'
                                   : 'Langkah Berikutnya',
                               style: const TextStyle(
                                 fontSize: 15,
@@ -680,14 +660,14 @@ class _InteractiveStepTimerWidget extends StatefulWidget {
 
 class _InteractiveStepTimerWidgetState
     extends State<_InteractiveStepTimerWidget> {
-  static const Color _bgNavy = Color(0xFF090D16);
-  static const Color _cardSlate = Color(0xFF131B2E);
-  static const Color _borderSlate = Color(0xFF23304E);
-  static const Color _skyCyan = Color(0xFF38BDF8);
-  static const Color _sapphireBlue = Color(0xFF2563EB);
-  static const Color _emeraldReady = Color(0xFF10B981);
-  static const Color _iceWhite = Color(0xFFF8FAFC);
-  static const Color _mutedSteel = Color(0xFF94A3B8);
+  static const Color _cardSoftMint = AppTheme.scaffoldMintWhite;
+  static const Color _pureWhite = AppTheme.pureWhite;
+  static const Color _borderNeutral = AppTheme.borderNeutral;
+  static const Color _mintLeaf = AppTheme.mintLeaf;
+  static const Color _forestPrimary = AppTheme.forestEmerald;
+  static const Color _botanicalGreen = AppTheme.botanicalGreen;
+  static const Color _textPrimary = AppTheme.textForestCharcoal;
+  static const Color _textSecondary = AppTheme.textSageGrey;
 
   late int _totalSeconds;
   late int _remainingSeconds;
@@ -773,23 +753,23 @@ class _InteractiveStepTimerWidgetState
         ? 0.0
         : (_remainingSeconds / _totalSeconds).clamp(0.0, 1.0);
 
-    final Color activeColor = _isFinished ? _emeraldReady : _skyCyan;
+    final Color activeColor = _isFinished ? _forestPrimary : _mintLeaf;
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 260),
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: _cardSlate,
+        color: _cardSoftMint,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: _isRunning || _isFinished ? activeColor : _borderSlate,
+          color: _isRunning || _isFinished ? activeColor : AppTheme.borderMint,
           width: _isRunning || _isFinished ? 1.5 : 1.0,
         ),
         boxShadow: _isRunning
             ? [
                 BoxShadow(
-                  color: activeColor.withValues(alpha: 0.22),
-                  blurRadius: 18,
+                  color: activeColor.withValues(alpha: 0.18),
+                  blurRadius: 16,
                   offset: const Offset(0, 6),
                 ),
               ]
@@ -805,7 +785,7 @@ class _InteractiveStepTimerWidgetState
               painter: _CircularTimerPainter(
                 progress: ratio,
                 color: activeColor,
-                trackColor: _borderSlate,
+                trackColor: AppTheme.shimmerBase,
               ),
               child: Center(
                 child: Column(
@@ -816,7 +796,7 @@ class _InteractiveStepTimerWidgetState
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
-                        color: _iceWhite,
+                        color: _textPrimary,
                         fontFeatures: [FontFeature.tabularFigures()],
                       ),
                     ),
@@ -827,7 +807,9 @@ class _InteractiveStepTimerWidgetState
                       style: TextStyle(
                         fontSize: 9.5,
                         fontWeight: FontWeight.w800,
-                        color: activeColor,
+                        color: activeColor == _mintLeaf
+                            ? _forestPrimary
+                            : activeColor,
                         letterSpacing: 0.5,
                       ),
                     ),
@@ -845,7 +827,11 @@ class _InteractiveStepTimerWidgetState
               children: [
                 Row(
                   children: [
-                    Icon(Icons.timer_outlined, size: 15, color: activeColor),
+                    const Icon(
+                      Icons.timer_outlined,
+                      size: 15,
+                      color: _forestPrimary,
+                    ),
                     const SizedBox(width: 5),
                     Expanded(
                       child: Text(
@@ -855,7 +841,7 @@ class _InteractiveStepTimerWidgetState
                         style: const TextStyle(
                           fontSize: 14.5,
                           fontWeight: FontWeight.w800,
-                          color: _iceWhite,
+                          color: _textPrimary,
                         ),
                       ),
                     ),
@@ -870,7 +856,7 @@ class _InteractiveStepTimerWidgetState
                             : 'Gunakan timer agar masakan matang pas.'),
                   style: const TextStyle(
                     fontSize: 12,
-                    color: _mutedSteel,
+                    color: _textSecondary,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -880,7 +866,7 @@ class _InteractiveStepTimerWidgetState
                   spacing: 8,
                   runSpacing: 8,
                   children: [
-                    // Start / Pause Pill Button
+                    // Start / Pause Pill Button (Dark Green)
                     GestureDetector(
                       onTap: _toggleTimer,
                       child: Container(
@@ -889,13 +875,7 @@ class _InteractiveStepTimerWidgetState
                           vertical: 8,
                         ),
                         decoration: BoxDecoration(
-                          gradient: _isFinished
-                              ? const LinearGradient(
-                                  colors: [_emeraldReady, _skyCyan],
-                                )
-                              : const LinearGradient(
-                                  colors: [_sapphireBlue, _skyCyan],
-                                ),
+                          color: _forestPrimary,
                           borderRadius: BorderRadius.circular(999),
                         ),
                         child: Row(
@@ -935,9 +915,9 @@ class _InteractiveStepTimerWidgetState
                           vertical: 8,
                         ),
                         decoration: BoxDecoration(
-                          color: _bgNavy,
+                          color: _pureWhite,
                           borderRadius: BorderRadius.circular(999),
-                          border: Border.all(color: _borderSlate),
+                          border: Border.all(color: _borderNeutral),
                         ),
                         child: const Row(
                           mainAxisSize: MainAxisSize.min,
@@ -945,7 +925,7 @@ class _InteractiveStepTimerWidgetState
                             Icon(
                               Icons.restart_alt_rounded,
                               size: 15,
-                              color: _mutedSteel,
+                              color: _forestPrimary,
                             ),
                             SizedBox(width: 4),
                             Text(
@@ -953,7 +933,7 @@ class _InteractiveStepTimerWidgetState
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
-                                color: _iceWhite,
+                                color: _forestPrimary,
                               ),
                             ),
                           ],
@@ -970,16 +950,16 @@ class _InteractiveStepTimerWidgetState
                           vertical: 8,
                         ),
                         decoration: BoxDecoration(
-                          color: _bgNavy,
+                          color: AppTheme.sageMint,
                           borderRadius: BorderRadius.circular(999),
-                          border: Border.all(color: _borderSlate),
+                          border: Border.all(color: _botanicalGreen.withValues(alpha: 0.35)),
                         ),
                         child: const Text(
                           '+30s',
                           style: TextStyle(
                             fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            color: _skyCyan,
+                            fontWeight: FontWeight.w800,
+                            color: _forestPrimary,
                           ),
                         ),
                       ),

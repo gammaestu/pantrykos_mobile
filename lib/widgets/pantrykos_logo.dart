@@ -28,18 +28,18 @@ class PantryKosLogoMark extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Color(0xFF172544),
-            Color(0xFF0D1528),
+            AppTheme.forestEmerald,
+            AppTheme.botanicalGreen,
           ],
         ),
         border: Border.all(
-          color: AppTheme.glowingSkyBorder.withValues(alpha: 0.65),
+          color: AppTheme.mintLeaf.withValues(alpha: 0.55),
           width: (size * 0.035).clamp(1.1, 2.0),
         ),
         boxShadow: enableGlow
             ? [
                 BoxShadow(
-                  color: AppTheme.primarySapphire.withValues(alpha: 0.28),
+                  color: AppTheme.mintLeaf.withValues(alpha: 0.25),
                   blurRadius: size * 0.35,
                   spreadRadius: size * 0.02,
                   offset: Offset(0, size * 0.08),
@@ -89,7 +89,7 @@ class PantryKosBrandLockup extends StatelessWidget {
           style: TextStyle(
             fontSize: fontSize,
             fontWeight: FontWeight.w800,
-            color: AppTheme.iceWhiteTitle,
+            color: AppTheme.textForestCharcoal,
             letterSpacing: -0.5,
             height: 1.1,
           ),
@@ -97,8 +97,8 @@ class PantryKosBrandLockup extends StatelessWidget {
         ShaderMask(
           shaderCallback: (bounds) => const LinearGradient(
             colors: [
-              Color(0xFF60A5FA),
-              Color(0xFF38BDF8),
+              AppTheme.forestEmerald,
+              AppTheme.mintLeaf,
             ],
           ).createShader(bounds),
           child: Text(
@@ -129,8 +129,8 @@ class _PantryKosVectorLogoPainter extends CustomPainter {
         center: const Alignment(-0.35, -0.45),
         radius: 0.95,
         colors: [
-          AppTheme.primarySapphire.withValues(alpha: 0.30),
-          AppTheme.gradientCyanEnd.withValues(alpha: 0.08),
+          AppTheme.mintLeaf.withValues(alpha: 0.32),
+          AppTheme.brightMint.withValues(alpha: 0.08),
           Colors.transparent,
         ],
       ).createShader(Offset.zero & size);
@@ -153,8 +153,8 @@ class _PantryKosVectorLogoPainter extends CustomPainter {
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
-          AppTheme.primarySapphire.withValues(alpha: 0.35),
-          AppTheme.gradientCyanEnd.withValues(alpha: 0.12),
+          AppTheme.mintLeaf.withValues(alpha: 0.35),
+          AppTheme.brightMint.withValues(alpha: 0.12),
         ],
       ).createShader(bowlRect);
     canvas.drawPath(bowlFillPath, bowlFillPaint);
@@ -164,9 +164,9 @@ class _PantryKosVectorLogoPainter extends CustomPainter {
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
         colors: [
-          AppTheme.iceWhiteTitle,
-          AppTheme.glowingSkyBorder,
-          AppTheme.gradientCyanEnd,
+          AppTheme.pureWhite,
+          AppTheme.sageMint,
+          AppTheme.brightMint,
         ],
       ).createShader(bowlRect)
       ..style = PaintingStyle.stroke
@@ -198,8 +198,8 @@ class _PantryKosVectorLogoPainter extends CustomPainter {
         begin: Alignment.topRight,
         end: Alignment.bottomLeft,
         colors: [
-          Color(0xFF34D399),
-          AppTheme.emeraldReady,
+          AppTheme.brightMint,
+          AppTheme.mintLeaf,
         ],
       ).createShader(Rect.fromLTWH(w * 0.50, h * 0.24, w * 0.26, h * 0.28))
       ..style = PaintingStyle.fill;
@@ -239,7 +239,7 @@ class _PantryKosVectorLogoPainter extends CustomPainter {
       ..close();
 
     final starPaint = Paint()
-      ..color = AppTheme.iceWhiteTitle
+      ..color = AppTheme.pureWhite
       ..style = PaintingStyle.fill;
     canvas.drawPath(starPath, starPaint);
   }

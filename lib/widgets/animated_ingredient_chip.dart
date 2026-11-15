@@ -5,8 +5,7 @@ import '../theme/app_theme.dart';
 
 /// Custom interactive ingredient chip for "Kulkas Virtual".
 /// Uses [AnimatedContainer], [AnimatedScale], and [HapticFeedback.lightImpact]
-/// with Translucent Royal Blue (#1E3A8A at 60% opacity) and a glowing
-/// #60A5FA border when active.
+/// with Soft Pastel Sage (#DCFCE7) fill and Vibrant Mint (#22C55E) border when active.
 class AnimatedIngredientChip extends StatefulWidget {
   final PantryIngredient ingredient;
   final bool isSelected;
@@ -54,20 +53,19 @@ class _AnimatedIngredientChipState extends State<AnimatedIngredientChip> {
     // Slight tactile bounce on press/selection
     final double targetScale = _isPressed ? 0.94 : (selected ? 1.01 : 1.0);
 
-    // Translucent Royal Blue (#1E3A8A at 60% opacity) when active,
-    // Elevated Slate Navy (#131C31) when inactive
+    // Soft Pastel Sage (#DCFCE7) when active, Mint-Tinted Off-White (#F6FAF7) when inactive
     final Color bgColor = selected
-        ? AppTheme.activeChipSurface
-        : AppTheme.elevatedSlateSurface;
+        ? AppTheme.sageMint
+        : AppTheme.scaffoldMintWhite;
 
-    // Glowing #60A5FA border when active, 1px #263554 when inactive
+    // Vibrant Mint (#22C55E) border when active, delicate #E2E8F0 when inactive
     final Color borderColor = selected
-        ? AppTheme.glowingSkyBorder
-        : AppTheme.slateBorder;
+        ? AppTheme.mintLeaf
+        : AppTheme.borderNeutral;
 
     final Color textColor = selected
-        ? AppTheme.iceWhiteTitle
-        : AppTheme.mutedSteelSubtitle;
+        ? AppTheme.forestEmerald
+        : AppTheme.textForestCharcoal;
 
     return GestureDetector(
       onTapDown: _handleTapDown,
@@ -96,7 +94,7 @@ class _AnimatedIngredientChipState extends State<AnimatedIngredientChip> {
             boxShadow: selected
                 ? [
                     BoxShadow(
-                      color: AppTheme.glowingSkyBorder.withValues(alpha: 0.25),
+                      color: AppTheme.mintLeaf.withValues(alpha: 0.18),
                       blurRadius: 10,
                       spreadRadius: 0.5,
                       offset: const Offset(0, 2),
@@ -141,8 +139,8 @@ class _AnimatedIngredientChipState extends State<AnimatedIngredientChip> {
                         height: 17,
                         decoration: BoxDecoration(
                           color: widget.showRemoveIconWhenSelected
-                              ? AppTheme.glowingSkyBorder.withValues(alpha: 0.28)
-                              : AppTheme.primarySapphire,
+                              ? AppTheme.forestEmerald.withValues(alpha: 0.14)
+                              : AppTheme.forestEmerald,
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
@@ -150,21 +148,27 @@ class _AnimatedIngredientChipState extends State<AnimatedIngredientChip> {
                               ? Icons.close_rounded
                               : Icons.check_rounded,
                           size: 11.5,
-                          color: AppTheme.iceWhiteTitle,
+                          color: widget.showRemoveIconWhenSelected
+                              ? AppTheme.forestEmerald
+                              : AppTheme.pureWhite,
                         ),
                       )
                     : Container(
                         key: const ValueKey('unchecked'),
                         width: 17,
                         height: 17,
-                        decoration: const BoxDecoration(
-                          color: AppTheme.elevatedSlateVariant,
+                        decoration: BoxDecoration(
+                          color: AppTheme.pureWhite,
                           shape: BoxShape.circle,
+                          border: Border.all(
+                            color: AppTheme.borderSlateLight,
+                            width: 1,
+                          ),
                         ),
                         child: const Icon(
                           Icons.add_rounded,
                           size: 11.5,
-                          color: AppTheme.mutedSteelSubtitle,
+                          color: AppTheme.textSageGrey,
                         ),
                       ),
               ),

@@ -36,9 +36,9 @@ class BookmarkScreen extends StatefulWidget {
 }
 
 class _BookmarkScreenState extends State<BookmarkScreen> {
-  static const Color _bgNavy = Color(0xFF090D16);
-  static const Color _cardSlate = Color(0xFF131B2E);
-  static const Color _borderSlate = Color(0xFF23304E);
+  static const Color _bgNavy = AppTheme.scaffoldMintWhite;
+  static const Color _cardSlate = AppTheme.pureWhite;
+  static const Color _borderSlate = AppTheme.borderNeutral;
 
   _BookmarkFilter _filter = _BookmarkFilter.semua;
 
@@ -80,12 +80,12 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
           style: const TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w600,
-            color: AppTheme.iceWhiteTitle,
+            color: AppTheme.textForestCharcoal,
           ),
         ),
         action: SnackBarAction(
           label: 'Urungkan',
-          textColor: const Color(0xFF38BDF8),
+          textColor: AppTheme.forestEmerald,
           onPressed: () => _c.toggleBookmark(recipe.id),
         ),
       ),
@@ -179,7 +179,7 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
                               style: TextStyle(
                                 fontSize: 21,
                                 fontWeight: FontWeight.w800,
-                                color: AppTheme.iceWhiteTitle,
+                                color: AppTheme.textForestCharcoal,
                                 letterSpacing: -0.5,
                               ),
                             ),
@@ -189,7 +189,7 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
                               style: const TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
-                                color: AppTheme.mutedSteelSubtitle,
+                                color: AppTheme.textSageGrey,
                               ),
                             ),
                           ],
@@ -206,7 +206,7 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
                         child: const Icon(
                           Icons.favorite_rounded,
                           size: 18,
-                          color: Color(0xFFFB7185),
+                          color: Color(0xFFE11D48),
                         ),
                       ),
                     ],
@@ -236,19 +236,20 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
                           height: 38,
                           padding: const EdgeInsets.symmetric(horizontal: 13),
                           decoration: BoxDecoration(
-                            gradient: selected ? AppTheme.primaryGradient : null,
-                            color: selected ? null : _cardSlate,
+                            color: selected
+                                ? AppTheme.forestEmerald
+                                : _cardSlate,
                             borderRadius: BorderRadius.circular(999),
                             border: Border.all(
                               color: selected
-                                  ? const Color(0xFF38BDF8)
-                                  : _borderSlate,
+                                  ? AppTheme.forestEmerald
+                                  : AppTheme.borderSlateLight,
                             ),
                             boxShadow: selected
                                 ? [
                                     BoxShadow(
-                                      color: AppTheme.primarySapphire
-                                          .withValues(alpha: 0.32),
+                                      color: AppTheme.forestEmerald
+                                          .withValues(alpha: 0.20),
                                       blurRadius: 10,
                                       offset: const Offset(0, 3),
                                     ),
@@ -262,8 +263,8 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
                                 f.icon,
                                 size: 15,
                                 color: selected
-                                    ? AppTheme.iceWhiteTitle
-                                    : AppTheme.mutedSteelSubtitle,
+                                    ? AppTheme.pureWhite
+                                    : AppTheme.textSageGrey,
                               ),
                               const SizedBox(width: 6),
                               Text(
@@ -274,8 +275,8 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
                                       ? FontWeight.w700
                                       : FontWeight.w600,
                                   color: selected
-                                      ? AppTheme.iceWhiteTitle
-                                      : AppTheme.mutedSteelSubtitle,
+                                      ? AppTheme.pureWhite
+                                      : AppTheme.textForestCharcoal,
                                 ),
                               ),
                             ],
@@ -324,8 +325,8 @@ class _BookmarkTile extends StatefulWidget {
 
 class _BookmarkTileState extends State<_BookmarkTile>
     with TickerProviderStateMixin {
-  static const Color _cardSlate = Color(0xFF131B2E);
-  static const Color _borderSlate = Color(0xFF23304E);
+  static const Color _cardSlate = AppTheme.pureWhite;
+  static const Color _borderSlate = AppTheme.borderNeutral;
 
   late final AnimationController _enter;
   late final AnimationController _exit;
@@ -382,11 +383,16 @@ class _BookmarkTileState extends State<_BookmarkTile>
     final match = widget.match;
     final recipe = match.recipe;
     final isReady = match.tier == RecipeMatchTier.readyToCook;
+    final isAlmost = match.tier == RecipeMatchTier.almostReady;
+    final badgeBg = isReady
+        ? AppTheme.readyPill
+        : (isAlmost ? AppTheme.almostPill : AppTheme.scaffoldMintWhite);
+    final badgeBorder = isReady
+        ? AppTheme.readyBorder
+        : (isAlmost ? AppTheme.almostBorder : AppTheme.borderSlateLight);
     final badgeColor = isReady
-        ? AppTheme.emeraldReady
-        : (match.tier == RecipeMatchTier.almostReady
-              ? AppTheme.amberAlmost
-              : AppTheme.glowingSkyBorder);
+        ? AppTheme.readyText
+        : (isAlmost ? AppTheme.almostText : AppTheme.textSageGrey);
     final badgeText = isReady
         ? 'Siap Masak (100%)'
         : 'Kurang ${match.missingCount} Bahan';
@@ -434,7 +440,7 @@ class _BookmarkTileState extends State<_BookmarkTile>
                       children: [
                         Icon(
                           Icons.bookmark_remove_rounded,
-                          color: Color(0xFFFB7185),
+                          color: Color(0xFFE11D48),
                           size: 24,
                         ),
                         SizedBox(height: 2),
@@ -443,7 +449,7 @@ class _BookmarkTileState extends State<_BookmarkTile>
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w800,
-                            color: Color(0xFFFB7185),
+                            color: Color(0xFFE11D48),
                           ),
                         ),
                       ],
@@ -467,7 +473,7 @@ class _BookmarkTileState extends State<_BookmarkTile>
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
                             color: isReady
-                                ? AppTheme.emeraldReady.withValues(alpha: 0.45)
+                                ? AppTheme.mintLeaf.withValues(alpha: 0.65)
                                 : _borderSlate,
                             width: isReady ? 1.3 : 1.0,
                           ),
@@ -512,10 +518,12 @@ class _BookmarkTileState extends State<_BookmarkTile>
                                         vertical: 3,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: const Color(
-                                          0xFF1E3A8A,
-                                        ).withValues(alpha: 0.9),
+                                        color: AppTheme.pureWhite
+                                            .withValues(alpha: 0.92),
                                         borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(
+                                          color: AppTheme.borderMint,
+                                        ),
                                       ),
                                       child: Row(
                                         mainAxisSize: MainAxisSize.min,
@@ -523,7 +531,7 @@ class _BookmarkTileState extends State<_BookmarkTile>
                                           Icon(
                                             recipe.cookingTool.icon,
                                             size: 11,
-                                            color: const Color(0xFF60A5FA),
+                                            color: AppTheme.forestEmerald,
                                           ),
                                           const SizedBox(width: 4),
                                           Flexible(
@@ -534,7 +542,7 @@ class _BookmarkTileState extends State<_BookmarkTile>
                                               style: const TextStyle(
                                                 fontSize: 10,
                                                 fontWeight: FontWeight.w800,
-                                                color: Color(0xFF60A5FA),
+                                                color: AppTheme.forestEmerald,
                                               ),
                                             ),
                                           ),
@@ -574,7 +582,7 @@ class _BookmarkTileState extends State<_BookmarkTile>
                                             style: const TextStyle(
                                               fontSize: 14.5,
                                               fontWeight: FontWeight.w800,
-                                              color: AppTheme.iceWhiteTitle,
+                                              color: AppTheme.textForestCharcoal,
                                               letterSpacing: -0.2,
                                               height: 1.25,
                                             ),
@@ -586,16 +594,12 @@ class _BookmarkTileState extends State<_BookmarkTile>
                                             vertical: 4,
                                           ),
                                           decoration: BoxDecoration(
-                                            color: badgeColor.withValues(
-                                              alpha: 0.16,
-                                            ),
+                                            color: badgeBg,
                                             borderRadius: BorderRadius.circular(
                                               999,
                                             ),
                                             border: Border.all(
-                                              color: badgeColor.withValues(
-                                                alpha: 0.55,
-                                              ),
+                                              color: badgeBorder,
                                             ),
                                           ),
                                           child: Row(
@@ -631,7 +635,7 @@ class _BookmarkTileState extends State<_BookmarkTile>
                                             const Icon(
                                               Icons.schedule_rounded,
                                               size: 13,
-                                              color: Color(0xFF38BDF8),
+                                              color: AppTheme.botanicalGreen,
                                             ),
                                             const SizedBox(width: 4),
                                             Text(
@@ -639,14 +643,14 @@ class _BookmarkTileState extends State<_BookmarkTile>
                                               style: const TextStyle(
                                                 fontSize: 11.5,
                                                 fontWeight: FontWeight.w700,
-                                                color: AppTheme.iceWhiteTitle,
+                                                color: AppTheme.textForestCharcoal,
                                               ),
                                             ),
                                             const SizedBox(width: 12),
                                             const Icon(
                                               Icons.payments_outlined,
                                               size: 13,
-                                              color: AppTheme.emeraldReady,
+                                              color: AppTheme.laserGreenEnd,
                                             ),
                                             const SizedBox(width: 4),
                                             Flexible(
@@ -657,8 +661,8 @@ class _BookmarkTileState extends State<_BookmarkTile>
                                                 style: const TextStyle(
                                                   fontSize: 11.5,
                                                   fontWeight: FontWeight.w700,
-                                                  color:
-                                                      AppTheme.iceWhiteTitle,
+                                                  color: AppTheme
+                                                      .textForestCharcoal,
                                                 ),
                                               ),
                                             ),
@@ -687,7 +691,7 @@ class _BookmarkTileState extends State<_BookmarkTile>
                                         child: const Icon(
                                           Icons.favorite_rounded,
                                           size: 17,
-                                          color: Color(0xFFFB7185),
+                                          color: Color(0xFFE11D48),
                                         ),
                                       ),
                                     ),
@@ -768,22 +772,21 @@ class _BookmarkEmptyStateState extends State<_BookmarkEmptyState>
                   height: 112,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: const Color(0xFF131B2E),
+                    color: AppTheme.pureWhite,
                     border: Border.all(
                       color: Color.lerp(
-                        const Color(0xFF2563EB),
-                        const Color(0xFF38BDF8),
+                        AppTheme.botanicalGreen,
+                        AppTheme.mintLeaf,
                         t,
                       )!,
                       width: 1.6,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(
-                          0xFF38BDF8,
-                        ).withValues(alpha: 0.18 + 0.20 * t),
-                        blurRadius: 24 + 16 * t,
-                        spreadRadius: 1 + 3 * t,
+                        color: AppTheme.mintLeaf
+                            .withValues(alpha: 0.16 + 0.16 * t),
+                        blurRadius: 24 + 14 * t,
+                        spreadRadius: 1 + 2 * t,
                       ),
                     ],
                   ),
@@ -792,7 +795,7 @@ class _BookmarkEmptyStateState extends State<_BookmarkEmptyState>
                     shaderCallback: (bounds) => const LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: [Color(0xFF2563EB), Color(0xFF38BDF8)],
+                      colors: [AppTheme.botanicalGreen, AppTheme.mintLeaf],
                     ).createShader(bounds),
                     child: Icon(widget.icon, size: 52, color: Colors.white),
                   ),
@@ -806,7 +809,7 @@ class _BookmarkEmptyStateState extends State<_BookmarkEmptyState>
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w800,
-                color: AppTheme.iceWhiteTitle,
+                color: AppTheme.textForestCharcoal,
                 letterSpacing: -0.3,
               ),
             ),
@@ -816,7 +819,7 @@ class _BookmarkEmptyStateState extends State<_BookmarkEmptyState>
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontSize: 13,
-                color: AppTheme.mutedSteelSubtitle,
+                color: AppTheme.textSageGrey,
                 height: 1.45,
               ),
             ),
@@ -832,9 +835,9 @@ class _BookmarkEmptyStateState extends State<_BookmarkEmptyState>
                   vertical: 11,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1E3A8A).withValues(alpha: 0.6),
+                  color: AppTheme.sageMint,
                   borderRadius: BorderRadius.circular(999),
-                  border: Border.all(color: const Color(0xFF60A5FA)),
+                  border: Border.all(color: AppTheme.mintLeaf),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -842,7 +845,7 @@ class _BookmarkEmptyStateState extends State<_BookmarkEmptyState>
                     const Icon(
                       Icons.kitchen_rounded,
                       size: 16,
-                      color: Color(0xFF60A5FA),
+                      color: AppTheme.forestEmerald,
                     ),
                     const SizedBox(width: 8),
                     Flexible(
@@ -853,7 +856,7 @@ class _BookmarkEmptyStateState extends State<_BookmarkEmptyState>
                         style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w800,
-                          color: AppTheme.iceWhiteTitle,
+                          color: AppTheme.forestEmerald,
                         ),
                       ),
                     ),

@@ -204,8 +204,8 @@ class MockPantryData {
           'Solusi legendaris anak kos saat kompor habis gas atau malas cuci banyak piring. Cukup cemplungkan nasi sisa semalam, remahan Indomie Goreng, irisan sosis, dan bumbu kecap pedas langsung ke dalam Rice Cooker!',
       imageUrl:
           'https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=1000&q=80',
-      primaryAccent: Color(0xFF3B82F6),
-      secondaryAccent: Color(0xFF06B6D4),
+      primaryAccent: Color(0xFF166534),
+      secondaryAccent: Color(0xFF22C55E),
       cookingTimeMinutes: 12,
       cookingTool: CookingTool.riceCooker,
       estimatedCostRupiah: 8000,
@@ -304,8 +304,8 @@ class MockPantryData {
           'Menu wajib akhir bulan yang rasanya nggak pernah gagal bikin nambah nasi. Tempe goreng garing dengan siraman minyak panas di atas ulekan bawang putih dan cabai rawit segar.',
       imageUrl:
           'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=1000&q=80',
-      primaryAccent: Color(0xFF10B981),
-      secondaryAccent: Color(0xFF3B82F6),
+      primaryAccent: Color(0xFF16A34A),
+      secondaryAccent: Color(0xFF4ADE80),
       cookingTimeMinutes: 10,
       cookingTool: CookingTool.teflon,
       estimatedCostRupiah: 5500,
@@ -382,7 +382,7 @@ class MockPantryData {
           'Rindu jajanan Nasi Gila tengah malam tapi uang saku menipis? Bikin sendiri versi teflon dengan potongan sosis melimpah, telur orak-arik lembut, dan saus kecap cabai yang kental menggugah selera.',
       imageUrl:
           'https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=1000&q=80',
-      primaryAccent: Color(0xFF2563EB),
+      primaryAccent: Color(0xFF14532D),
       secondaryAccent: Color(0xFFF59E0B),
       cookingTimeMinutes: 10,
       cookingTool: CookingTool.teflon,
@@ -478,7 +478,7 @@ class MockPantryData {
       imageUrl:
           'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=1000&q=80',
       primaryAccent: Color(0xFFF59E0B),
-      secondaryAccent: Color(0xFF3B82F6),
+      secondaryAccent: Color(0xFF22C55E),
       cookingTimeMinutes: 10,
       cookingTool: CookingTool.teflon,
       estimatedCostRupiah: 9000,
@@ -557,8 +557,8 @@ class MockPantryData {
           'Perpaduan kornet sapi gurih dan telur orak-arik dengan tumisan bawang merah serta cabai rawit melimpah. Satu resep ini bisa buat makan siang sekaligus disimpan buat makan malam!',
       imageUrl:
           'https://images.unsplash.com/photo-1582169296194-e4d644c48063?auto=format&fit=crop&w=1000&q=80',
-      primaryAccent: Color(0xFF06B6D4),
-      secondaryAccent: Color(0xFF3B82F6),
+      primaryAccent: Color(0xFF22C55E),
+      secondaryAccent: Color(0xFF14532D),
       cookingTimeMinutes: 8,
       cookingTool: CookingTool.teflon,
       estimatedCostRupiah: 10000,
@@ -642,8 +642,8 @@ class MockPantryData {
           'Sup rumahan bergaya oriental yang super praktis dimasak pakai Panci Listrik kosan. Kuah tomat segar berpadu dengan serabut telur lembut yang menenangkan perut.',
       imageUrl:
           'https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=1000&q=80',
-      primaryAccent: Color(0xFF0EA5E9),
-      secondaryAccent: Color(0xFF10B981),
+      primaryAccent: Color(0xFF15803D),
+      secondaryAccent: Color(0xFF4ADE80),
       cookingTimeMinutes: 10,
       cookingTool: CookingTool.panciListrik,
       estimatedCostRupiah: 7500,
@@ -722,8 +722,8 @@ class MockPantryData {
           'Upgrade Indomie Kuah biasa menjadi hidangan ramen creamy ala Jepang hanya dengan Panci Listrik. Lelehan keju quick melt dan kuning telur setengah matang bikin kuahnya super kental!',
       imageUrl:
           'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=1000&q=80',
-      primaryAccent: Color(0xFF6366F1),
-      secondaryAccent: Color(0xFF06B6D4),
+      primaryAccent: Color(0xFF166534),
+      secondaryAccent: Color(0xFFD97706),
       cookingTimeMinutes: 7,
       cookingTool: CookingTool.panciListrik,
       estimatedCostRupiah: 8500,
@@ -792,8 +792,8 @@ class MockPantryData {
           'Menu penyelamat ketika stok kulkas hampir kosong. Cukup telur ayam, bawang putih cincang wangi, cabai, dan saus kecap manis gurih yang meresap ke nasi hangat.',
       imageUrl:
           'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=1000&q=80',
-      primaryAccent: Color(0xFF10B981),
-      secondaryAccent: Color(0xFF3B82F6),
+      primaryAccent: Color(0xFF16A34A),
+      secondaryAccent: Color(0xFF4ADE80),
       cookingTimeMinutes: 6,
       cookingTool: CookingTool.riceCooker,
       estimatedCostRupiah: 5000,

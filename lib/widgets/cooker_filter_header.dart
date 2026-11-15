@@ -40,12 +40,12 @@ class CookerFilterHeaderDelegate extends SliverPersistentHeaderDelegate {
           height: maxExtent,
           alignment: Alignment.centerLeft,
           decoration: BoxDecoration(
-            color: AppTheme.midnightNavyScaffold.withValues(alpha: 0.88),
+            color: AppTheme.scaffoldMintWhite.withValues(alpha: 0.92),
             border: Border(
               bottom: BorderSide(
                 color: overlapsContent
-                    ? AppTheme.slateBorder
-                    : AppTheme.slateBorder.withValues(alpha: 0.35),
+                    ? AppTheme.borderMint
+                    : AppTheme.borderNeutral.withValues(alpha: 0.55),
                 width: 1,
               ),
             ),
@@ -76,22 +76,21 @@ class CookerFilterHeaderDelegate extends SliverPersistentHeaderDelegate {
                       height: 38,
                       padding: const EdgeInsets.symmetric(horizontal: 13),
                       decoration: BoxDecoration(
-                        gradient: isSelected ? AppTheme.primaryGradient : null,
                         color: isSelected
-                            ? null
-                            : AppTheme.elevatedSlateSurface,
+                            ? AppTheme.forestEmerald
+                            : AppTheme.pureWhite,
                         borderRadius: BorderRadius.circular(999),
                         border: Border.all(
                           color: isSelected
-                              ? AppTheme.glowingSkyBorder
-                              : AppTheme.slateBorder,
+                              ? AppTheme.forestEmerald
+                              : AppTheme.borderSlateLight,
                           width: isSelected ? 1.3 : 1.0,
                         ),
                         boxShadow: isSelected
                             ? [
                                 BoxShadow(
-                                  color: AppTheme.primarySapphire.withValues(
-                                    alpha: 0.32,
+                                  color: AppTheme.forestEmerald.withValues(
+                                    alpha: 0.20,
                                   ),
                                   blurRadius: 10,
                                   offset: const Offset(0, 3),
@@ -106,8 +105,8 @@ class CookerFilterHeaderDelegate extends SliverPersistentHeaderDelegate {
                             tool.icon,
                             size: 15,
                             color: isSelected
-                                ? AppTheme.iceWhiteTitle
-                                : AppTheme.mutedSteelSubtitle,
+                                ? AppTheme.pureWhite
+                                : AppTheme.textSageGrey,
                           ),
                           const SizedBox(width: 6),
                           Text(
@@ -118,8 +117,8 @@ class CookerFilterHeaderDelegate extends SliverPersistentHeaderDelegate {
                                   ? FontWeight.w700
                                   : FontWeight.w600,
                               color: isSelected
-                                  ? AppTheme.iceWhiteTitle
-                                  : AppTheme.mutedSteelSubtitle,
+                                  ? AppTheme.pureWhite
+                                  : AppTheme.textForestCharcoal,
                             ),
                           ),
                         ],

@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'screens/main_navigation.dart';
 import 'theme/app_theme.dart';
+import 'screens/main_navigation.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.light,
-      systemNavigationBarColor: AppTheme.midnightNavyScaffold,
-      systemNavigationBarIconBrightness: Brightness.light,
+      statusBarIconBrightness: Brightness.dark,
+      systemNavigationBarColor: AppTheme.scaffoldMintWhite,
+      systemNavigationBarIconBrightness: Brightness.dark,
     ),
   );
   runApp(const PantryKosApp());
 }
 
-/// Root application widget for PantryKos (Smart Pantry & Recipe Finder for Boarding Students).
 class PantryKosApp extends StatelessWidget {
   const PantryKosApp({super.key});
 
@@ -25,9 +24,8 @@ class PantryKosApp extends StatelessWidget {
     return MaterialApp(
       title: 'PantryKos — Smart Pantry Anak Kos',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.midnightNavyTheme,
-      darkTheme: AppTheme.midnightNavyTheme,
-      themeMode: ThemeMode.dark,
+      theme: AppTheme.lightTheme,
+      themeMode: ThemeMode.light,
       home: const MainNavigation(),
     );
   }

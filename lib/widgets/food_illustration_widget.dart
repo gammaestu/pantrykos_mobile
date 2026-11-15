@@ -104,9 +104,9 @@ class _CulinaryBackdropPainter extends CustomPainter {
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
         colors: [
-          Color.lerp(primary, const Color(0xFF0F172A), 0.35)!,
-          Color.lerp(secondary, const Color(0xFF1E293B), 0.55)!,
-          const Color(0xFF0F172A),
+          Color.lerp(primary, const Color(0xFF0F291E), 0.35)!,
+          Color.lerp(secondary, const Color(0xFF14532D), 0.55)!,
+          const Color(0xFF0F291E),
         ],
       ).createShader(rect);
     canvas.drawRect(rect, bgPaint);

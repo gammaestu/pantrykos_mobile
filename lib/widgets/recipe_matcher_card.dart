@@ -81,27 +81,31 @@ class _RecipeMatcherCardState extends State<RecipeMatcherCard>
 
     // Semantic badge colors based on ingredient readiness
     final Color badgeBgColor;
+    final Color badgeBorderColor;
     final Color badgeIconColor;
+    final Color badgeTextColor;
     final IconData badgeIcon;
 
     switch (tier) {
       case RecipeMatchTier.readyToCook:
-        badgeBgColor = AppTheme.emeraldReady;
-        badgeIconColor = Colors.white;
+        badgeBgColor = AppTheme.readyPill;
+        badgeBorderColor = AppTheme.readyBorder;
+        badgeIconColor = AppTheme.readyText;
+        badgeTextColor = AppTheme.readyText;
         badgeIcon = Icons.verified_rounded;
       case RecipeMatchTier.almostReady:
-        badgeBgColor = AppTheme.amberAlmost;
-        badgeIconColor = AppTheme.midnightNavyScaffold;
+        badgeBgColor = AppTheme.almostPill;
+        badgeBorderColor = AppTheme.almostBorder;
+        badgeIconColor = AppTheme.almostText;
+        badgeTextColor = AppTheme.almostText;
         badgeIcon = Icons.auto_awesome_rounded;
       case RecipeMatchTier.needsShopping:
-        badgeBgColor = AppTheme.elevatedSlateVariant.withValues(alpha: 0.94);
-        badgeIconColor = AppTheme.glowingSkyBorder;
+        badgeBgColor = AppTheme.pureWhite.withValues(alpha: 0.94);
+        badgeBorderColor = AppTheme.borderSlateLight;
+        badgeIconColor = AppTheme.textSageGrey;
+        badgeTextColor = AppTheme.textForestCharcoal;
         badgeIcon = Icons.shopping_basket_rounded;
     }
-
-    final Color badgeTextColor = tier == RecipeMatchTier.almostReady
-        ? AppTheme.midnightNavyScaffold
-        : AppTheme.iceWhiteTitle;
 
     return TweenAnimationBuilder<double>(
       key: ValueKey('${recipe.id}_${widget.matchResult.matchPercentage}'),
@@ -133,12 +137,12 @@ class _RecipeMatcherCardState extends State<RecipeMatcherCard>
           curve: Curves.easeOutCubic,
           child: Container(
             decoration: BoxDecoration(
-              color: AppTheme.elevatedSlateSurface,
+              color: AppTheme.pureWhite,
               borderRadius: BorderRadius.circular(AppTheme.cardRadius),
               border: Border.all(
                 color: tier == RecipeMatchTier.readyToCook
-                    ? AppTheme.emeraldReady.withValues(alpha: 0.5)
-                    : AppTheme.slateBorder,
+                    ? AppTheme.mintLeaf.withValues(alpha: 0.70)
+                    : AppTheme.borderNeutral,
                 width: tier == RecipeMatchTier.readyToCook ? 1.4 : 1.0,
               ),
               boxShadow: AppTheme.softShadow(context),
@@ -183,13 +187,17 @@ class _RecipeMatcherCardState extends State<RecipeMatcherCard>
                                 decoration: BoxDecoration(
                                   color: badgeBgColor,
                                   borderRadius: BorderRadius.circular(999),
+                                  border: Border.all(
+                                    color: badgeBorderColor,
+                                    width: 1.2,
+                                  ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: badgeBgColor.withValues(
-                                        alpha: 0.4,
+                                      color: Colors.black.withValues(
+                                        alpha: 0.12,
                                       ),
-                                      blurRadius: 12,
-                                      offset: const Offset(0, 4),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 3),
                                     ),
                                   ],
                                 ),
@@ -236,13 +244,12 @@ class _RecipeMatcherCardState extends State<RecipeMatcherCard>
                                     width: 36,
                                     height: 36,
                                     decoration: BoxDecoration(
-                                      color: AppTheme.midnightNavyScaffold
-                                          .withValues(alpha: 0.55),
+                                      color: AppTheme.pureWhite.withValues(
+                                        alpha: 0.88,
+                                      ),
                                       shape: BoxShape.circle,
                                       border: Border.all(
-                                        color: Colors.white.withValues(
-                                          alpha: 0.22,
-                                        ),
+                                        color: AppTheme.borderMint,
                                       ),
                                     ),
                                     alignment: Alignment.center,
@@ -254,8 +261,8 @@ class _RecipeMatcherCardState extends State<RecipeMatcherCard>
                                             : Icons.favorite_border_rounded,
                                         size: 19,
                                         color: widget.isBookmarked
-                                            ? const Color(0xFFFB7185)
-                                            : AppTheme.iceWhiteTitle,
+                                            ? const Color(0xFFE11D48)
+                                            : AppTheme.textForestCharcoal,
                                       ),
                                     ),
                                   ),
@@ -281,7 +288,7 @@ class _RecipeMatcherCardState extends State<RecipeMatcherCard>
                               style: const TextStyle(
                                 fontSize: 17.5,
                                 fontWeight: FontWeight.w800,
-                                color: AppTheme.iceWhiteTitle,
+                                color: AppTheme.pureWhite,
                                 letterSpacing: -0.3,
                                 shadows: [
                                   Shadow(
@@ -300,8 +307,8 @@ class _RecipeMatcherCardState extends State<RecipeMatcherCard>
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w500,
-                                color: AppTheme.iceWhiteTitle.withValues(
-                                  alpha: 0.85,
+                                color: AppTheme.pureWhite.withValues(
+                                  alpha: 0.90,
                                 ),
                               ),
                             ),
@@ -326,17 +333,17 @@ class _RecipeMatcherCardState extends State<RecipeMatcherCard>
                           _MetadataChip(
                             icon: Icons.schedule_rounded,
                             label: recipe.formattedTime,
-                            accentColor: AppTheme.glowingSkyBorder,
+                            accentColor: AppTheme.forestEmerald,
                           ),
                           _MetadataChip(
                             icon: recipe.cookingTool.icon,
                             label: recipe.cookingTool.badgeLabel,
-                            accentColor: AppTheme.gradientCyanEnd,
+                            accentColor: AppTheme.botanicalGreen,
                           ),
                           _MetadataChip(
                             icon: Icons.payments_outlined,
                             label: recipe.formattedCost,
-                            accentColor: AppTheme.emeraldReady,
+                            accentColor: AppTheme.laserGreenEnd,
                           ),
                         ],
                       ),
@@ -359,7 +366,7 @@ class _RecipeMatcherCardState extends State<RecipeMatcherCard>
                                       style: const TextStyle(
                                         fontSize: 11.5,
                                         fontWeight: FontWeight.w700,
-                                        color: AppTheme.mutedSteelSubtitle,
+                                        color: AppTheme.textSageGrey,
                                       ),
                                     ),
                                     Text(
@@ -369,12 +376,12 @@ class _RecipeMatcherCardState extends State<RecipeMatcherCard>
                                         fontWeight: FontWeight.w800,
                                         color:
                                             tier == RecipeMatchTier.readyToCook
-                                            ? AppTheme.emeraldReady
+                                            ? AppTheme.forestEmerald
                                             : (tier ==
                                                       RecipeMatchTier
                                                           .almostReady
-                                                  ? AppTheme.amberAlmost
-                                                  : AppTheme.glowingSkyBorder),
+                                                  ? AppTheme.almostText
+                                                  : AppTheme.textSageGrey),
                                       ),
                                     ),
                                   ],
@@ -393,20 +400,21 @@ class _RecipeMatcherCardState extends State<RecipeMatcherCard>
                                       return LinearProgressIndicator(
                                         value: ratio,
                                         minHeight: 5.5,
-                                        backgroundColor:
-                                            AppTheme.elevatedSlateVariant,
+                                        backgroundColor: AppTheme.shimmerBase,
                                         valueColor:
                                             AlwaysStoppedAnimation<Color>(
                                               tier ==
                                                       RecipeMatchTier
                                                           .readyToCook
-                                                  ? AppTheme.emeraldReady
+                                                  ? AppTheme.mintLeaf
                                                   : (tier ==
                                                             RecipeMatchTier
                                                                 .almostReady
-                                                        ? AppTheme.amberAlmost
+                                                        ? const Color(
+                                                            0xFFD97706,
+                                                          )
                                                         : AppTheme
-                                                              .primarySapphire),
+                                                              .textSageGrey),
                                             ),
                                       );
                                     },
@@ -439,10 +447,10 @@ class _RecipeMatcherCardState extends State<RecipeMatcherCard>
                                     vertical: 6,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: AppTheme.activeChipSurface,
+                                    color: AppTheme.sageMint,
                                     borderRadius: BorderRadius.circular(10),
                                     border: Border.all(
-                                      color: AppTheme.glowingSkyBorder,
+                                      color: AppTheme.mintLeaf,
                                       width: 1.0,
                                     ),
                                   ),
@@ -452,7 +460,7 @@ class _RecipeMatcherCardState extends State<RecipeMatcherCard>
                                       const Icon(
                                         Icons.add_task_rounded,
                                         size: 13,
-                                        color: AppTheme.glowingSkyBorder,
+                                        color: AppTheme.forestEmerald,
                                       ),
                                       const SizedBox(width: 4),
                                       Text(
@@ -460,7 +468,7 @@ class _RecipeMatcherCardState extends State<RecipeMatcherCard>
                                         style: const TextStyle(
                                           fontSize: 11,
                                           fontWeight: FontWeight.w700,
-                                          color: AppTheme.iceWhiteTitle,
+                                          color: AppTheme.forestEmerald,
                                         ),
                                       ),
                                     ],
@@ -499,9 +507,9 @@ class _MetadataChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: AppTheme.elevatedSlateVariant,
+        color: AppTheme.softMintTint,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppTheme.slateBorder, width: 1),
+        border: Border.all(color: AppTheme.borderMint, width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -513,7 +521,7 @@ class _MetadataChip extends StatelessWidget {
             style: const TextStyle(
               fontSize: 11.5,
               fontWeight: FontWeight.w700,
-              color: AppTheme.iceWhiteTitle,
+              color: AppTheme.textForestCharcoal,
             ),
           ),
         ],

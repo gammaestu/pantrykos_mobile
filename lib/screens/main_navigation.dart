@@ -65,7 +65,7 @@ class _MainNavigationState extends State<MainNavigation> {
       SnackBar(
         behavior: SnackBarBehavior.floating,
         margin: const EdgeInsets.fromLTRB(16, 0, 16, 112),
-        backgroundColor: AppTheme.emeraldReady,
+        backgroundColor: AppTheme.forestEmerald,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         content: Row(
           children: [
@@ -101,7 +101,7 @@ class _MainNavigationState extends State<MainNavigation> {
           );
 
     return Scaffold(
-      backgroundColor: AppTheme.midnightNavyScaffold,
+      backgroundColor: AppTheme.scaffoldMintWhite,
       body: Stack(
         children: [
           Positioned.fill(
@@ -136,7 +136,7 @@ class _MainNavigationState extends State<MainNavigation> {
   }
 }
 
-/// Floating glassmorphic dock: #131B2E @ 85% + blur + 1px #23304E border.
+/// Floating glassmorphic dock: Frosted White (#FFFFFF @ 92%) + blur + 1px #DCFCE7 border.
 class _FloatingDock extends StatefulWidget {
   final int currentIndex;
   final int bookmarkCount;
@@ -156,10 +156,10 @@ class _FloatingDock extends StatefulWidget {
 
 class _FloatingDockState extends State<_FloatingDock>
     with SingleTickerProviderStateMixin {
-  static const Color _dockSurface = Color(0xFF131B2E);
-  static const Color _dockBorder = Color(0xFF23304E);
-  static const Color _skyCyan = Color(0xFF38BDF8);
-  static const Color _sapphire = Color(0xFF2563EB);
+  static const Color _dockSurface = AppTheme.pureWhite;
+  static const Color _dockBorder = AppTheme.borderMint;
+  static const Color _mintLeaf = AppTheme.mintLeaf;
+  static const Color _botanicalGreen = AppTheme.botanicalGreen;
 
   late final AnimationController _glow;
   bool _scanPressed = false;
@@ -199,7 +199,7 @@ class _FloatingDockState extends State<_FloatingDock>
                 filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: _dockSurface.withValues(alpha: 0.85),
+                    color: _dockSurface.withValues(alpha: 0.92),
                     borderRadius: BorderRadius.circular(28),
                     border: Border.all(color: _dockBorder, width: 1),
                   ),
@@ -259,18 +259,18 @@ class _FloatingDockState extends State<_FloatingDock>
                             gradient: const LinearGradient(
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
-                              colors: [_sapphire, _skyCyan],
+                              colors: [_botanicalGreen, _mintLeaf],
                             ),
                             border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.28),
+                              color: Colors.white.withValues(alpha: 0.35),
                               width: 1.4,
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: _skyCyan.withValues(
-                                  alpha: 0.32 + 0.20 * t,
+                                color: _mintLeaf.withValues(
+                                  alpha: 0.28 + 0.18 * t,
                                 ),
-                                blurRadius: 18 + 12 * t,
+                                blurRadius: 18 + 10 * t,
                                 spreadRadius: 1 + 2 * t,
                                 offset: const Offset(0, 6),
                               ),
@@ -284,7 +284,7 @@ class _FloatingDockState extends State<_FloatingDock>
                           style: TextStyle(
                             fontSize: 10.5,
                             fontWeight: FontWeight.w800,
-                            color: _skyCyan,
+                            color: AppTheme.forestEmerald,
                             letterSpacing: 0.3,
                           ),
                         ),
@@ -325,8 +325,8 @@ class _DockItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const activeColor = Color(0xFF38BDF8);
-    final color = selected ? activeColor : AppTheme.mutedSteelSubtitle;
+    const activeColor = AppTheme.forestEmerald;
+    final color = selected ? activeColor : AppTheme.textSageGrey;
 
     return GestureDetector(
       onTap: onTap,
@@ -346,12 +346,12 @@ class _DockItem extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   color: selected
-                      ? const Color(0xFF1E3A8A).withValues(alpha: 0.6)
+                      ? AppTheme.sageMint
                       : Colors.transparent,
                   borderRadius: BorderRadius.circular(999),
                   border: Border.all(
                     color: selected
-                        ? const Color(0xFF60A5FA).withValues(alpha: 0.6)
+                        ? AppTheme.mintLeaf.withValues(alpha: 0.65)
                         : Colors.transparent,
                   ),
                 ),
@@ -378,10 +378,10 @@ class _DockItem extends StatelessWidget {
                       vertical: 1,
                     ),
                     decoration: BoxDecoration(
-                      color: AppTheme.primarySapphire,
+                      color: AppTheme.forestEmerald,
                       borderRadius: BorderRadius.circular(999),
                       border: Border.all(
-                        color: const Color(0xFF131B2E),
+                        color: AppTheme.pureWhite,
                         width: 1.5,
                       ),
                     ),

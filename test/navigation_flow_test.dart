@@ -58,7 +58,8 @@ void main() {
     await tester.tap(find.text('Scan AI'));
     await settle(900);
     expect(find.text('Pindai Bahan di Kulkas'), findsOneWidget);
-    await tester.tap(find.text('Masukkan ke Kulkas (+)'));
+    expect(find.text('Masukkan ke Kulkas (+)'), findsOneWidget);
+    await tester.tap(find.byIcon(Icons.arrow_back_ios_new_rounded));
     await settle(900);
     expect(find.text('Kulkas Kos'), findsOneWidget);
   });
