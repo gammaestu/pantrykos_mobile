@@ -111,6 +111,17 @@ void main() {
     expect(find.text('Live Laravel AI'), findsOneWidget);
     await tester.tap(find.text('Simpan Konfigurasi'));
     await settle(900);
+
+    // Back press on Home opens exit confirmation dialog; "Batal" keeps user inside app
+    await tester.binding.handlePopRoute();
+    await settle(500);
+    expect(find.text('Keluar dari PantryKos?'), findsOneWidget);
+    expect(find.text('Batal'), findsOneWidget);
+    expect(find.text('Keluar'), findsOneWidget);
+    await tester.tap(find.text('Batal'));
+    await settle(500);
+    expect(find.text('Keluar dari PantryKos?'), findsNothing);
+    expect(find.text('Kulkas Kos'), findsOneWidget);
   });
 
   testWidgets('Async state widgets & CookingModeSheet fridge-update dialog', (

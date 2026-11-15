@@ -32,6 +32,114 @@ class _MainNavigationState extends State<MainNavigation> {
     setState(() => _tabIndex = index);
   }
 
+  Future<void> _confirmExitApp() async {
+    HapticFeedback.lightImpact();
+    final shouldExit = await showDialog<bool>(
+      context: context,
+      builder: (ctx) {
+        return Dialog(
+          backgroundColor: AppTheme.pureWhite,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+            side: const BorderSide(color: AppTheme.borderMint, width: 1.2),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: AppTheme.sageMint,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: AppTheme.mintLeaf.withValues(alpha: 0.6),
+                      width: 1.3,
+                    ),
+                  ),
+                  child: const Icon(
+                    Icons.exit_to_app_rounded,
+                    size: 28,
+                    color: AppTheme.forestEmerald,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Keluar dari PantryKos?',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: AppTheme.textForestCharcoal,
+                    letterSpacing: -0.3,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Stok kulkas virtual dan resep favoritmu tetap tersimpan dengan aman.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 13.5,
+                    height: 1.45,
+                    color: AppTheme.textSageGrey,
+                  ),
+                ),
+                const SizedBox(height: 22),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.of(ctx).pop(false),
+                        style: OutlinedButton.styleFrom(
+                          backgroundColor: AppTheme.softMintTint,
+                          foregroundColor: AppTheme.forestEmerald,
+                          side: const BorderSide(color: AppTheme.borderMint),
+                          padding: const EdgeInsets.symmetric(vertical: 13),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        child: const Text(
+                          'Batal',
+                          style: TextStyle(fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () => Navigator.of(ctx).pop(true),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.forestEmerald,
+                          foregroundColor: AppTheme.pureWhite,
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(vertical: 13),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        child: const Text(
+                          'Keluar',
+                          style: TextStyle(fontWeight: FontWeight.w800),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    if (shouldExit == true) {
+      await SystemNavigator.pop();
+    }
+  }
+
   Future<void> _openScanner() async {
     HapticFeedback.mediumImpact();
     final scannedIds = await Navigator.of(context).push<Set<String>>(
@@ -100,37 +208,48 @@ class _MainNavigationState extends State<MainNavigation> {
             onGoToKulkas: () => _selectTab(0),
           );
 
-    return Scaffold(
-      backgroundColor: AppTheme.scaffoldMintWhite,
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 240),
-              switchInCurve: Curves.easeOutCubic,
-              switchOutCurve: Curves.easeInCubic,
-              child: page,
+    return PopScope<void>(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        if (_tabIndex != 0) {
+          _selectTab(0);
+          return;
+        }
+        _confirmExitApp();
+      },
+      child: Scaffold(
+        backgroundColor: AppTheme.scaffoldMintWhite,
+        body: Stack(
+          children: [
+            Positioned.fill(
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 240),
+                switchInCurve: Curves.easeOutCubic,
+                switchOutCurve: Curves.easeInCubic,
+                child: page,
+              ),
             ),
-          ),
-          Positioned(
-            left: 20,
-            right: 20,
-            bottom: 0,
-            child: SafeArea(
-              top: false,
-              minimum: const EdgeInsets.only(bottom: 14),
-              child: ListenableBuilder(
-                listenable: _controller,
-                builder: (context, _) => _FloatingDock(
-                  currentIndex: _tabIndex,
-                  bookmarkCount: _controller.bookmarkedRecipeIds.length,
-                  onSelectTab: _selectTab,
-                  onScan: _openScanner,
+            Positioned(
+              left: 20,
+              right: 20,
+              bottom: 0,
+              child: SafeArea(
+                top: false,
+                minimum: const EdgeInsets.only(bottom: 14),
+                child: ListenableBuilder(
+                  listenable: _controller,
+                  builder: (context, _) => _FloatingDock(
+                    currentIndex: _tabIndex,
+                    bookmarkCount: _controller.bookmarkedRecipeIds.length,
+                    onSelectTab: _selectTab,
+                    onScan: _openScanner,
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
