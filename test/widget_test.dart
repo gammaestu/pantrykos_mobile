@@ -7,7 +7,20 @@ void main() {
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(const PantryKosApp());
+    await tester.pump(const Duration(milliseconds: 900));
+
+    // Choreographed Splash Screen phase 1
+    expect(find.text('PantryKos'), findsOneWidget);
+    expect(find.text('Memindai bahan anak kos...'), findsOneWidget);
+
+    // Phase 2 micro-copy after 1.35s
     await tester.pump(const Duration(milliseconds: 600));
+    expect(find.text('Menyiapkan Kulkas Virtual...'), findsOneWidget);
+
+    // Advance past 2.8s splash hold + 650ms CircularReveal transition into MainNavigation
+    await tester.pump(const Duration(milliseconds: 1400));
+    await tester.pump(const Duration(milliseconds: 700));
+    await tester.pump(const Duration(milliseconds: 200));
 
     // Floating dock destinations
     expect(find.text('Kulkas Kos'), findsOneWidget);

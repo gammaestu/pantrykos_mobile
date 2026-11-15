@@ -361,14 +361,19 @@ class _RecipeMatcherCardState extends State<RecipeMatcherCard>
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(
-                                      'Kecocokan Bahan: ${widget.matchResult.matchedIngredients.length}/${recipe.ingredients.length}',
-                                      style: const TextStyle(
-                                        fontSize: 11.5,
-                                        fontWeight: FontWeight.w700,
-                                        color: AppTheme.textSageGrey,
+                                    Flexible(
+                                      child: Text(
+                                        'Kecocokan Bahan: ${widget.matchResult.matchedIngredients.length}/${recipe.ingredients.length}',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          fontSize: 11.5,
+                                          fontWeight: FontWeight.w700,
+                                          color: AppTheme.textSageGrey,
+                                        ),
                                       ),
                                     ),
+                                    const SizedBox(width: 6),
                                     Text(
                                       '${widget.matchResult.matchPercentage}%',
                                       style: TextStyle(

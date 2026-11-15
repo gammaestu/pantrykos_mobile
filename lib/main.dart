@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'presentation/screens/splash_screen.dart';
 import 'theme/app_theme.dart';
-import 'screens/main_navigation.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,7 +26,7 @@ class PantryKosApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       themeMode: ThemeMode.light,
-      home: const MainNavigation(),
+      home: const SplashScreen(),
     );
   }
 }

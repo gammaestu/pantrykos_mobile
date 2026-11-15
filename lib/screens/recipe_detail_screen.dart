@@ -23,6 +23,7 @@ class RecipeDetailScreen extends StatefulWidget {
   final bool initialBookmarked;
   final VoidCallback onBookmarkToggle;
   final ValueChanged<String> onTogglePantryIngredient;
+  final ValueChanged<Iterable<String>>? onConsumeIngredients;
 
   const RecipeDetailScreen({
     super.key,
@@ -31,6 +32,7 @@ class RecipeDetailScreen extends StatefulWidget {
     required this.initialBookmarked,
     required this.onBookmarkToggle,
     required this.onTogglePantryIngredient,
+    this.onConsumeIngredients,
   });
 
   @override
@@ -93,7 +95,19 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => CookingModeSheet(recipe: widget.recipe),
+      builder: (_) => CookingModeSheet(
+        recipe: widget.recipe,
+        onRemoveUsedIngredients: () {
+          final usedIds = widget.recipe.ingredients
+              .map((item) => item.ingredientId)
+              .toList();
+          setState(() {
+            _localPantryIds.removeAll(usedIds);
+            _checkedPreparationIds.removeAll(usedIds);
+          });
+          widget.onConsumeIngredients?.call(usedIds);
+        },
+      ),
     );
   }
 

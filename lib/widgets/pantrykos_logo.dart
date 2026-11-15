@@ -65,6 +65,7 @@ class PantryKosBrandLockup extends StatelessWidget {
   final String? subtitle;
   final VoidCallback? onTap;
   final bool showMark;
+  final bool enableHero;
 
   const PantryKosBrandLockup({
     super.key,
@@ -73,15 +74,20 @@ class PantryKosBrandLockup extends StatelessWidget {
     this.subtitle,
     this.onTap,
     this.showMark = true,
+    this.enableHero = true,
   });
 
   @override
   Widget build(BuildContext context) {
+    final mark = PantryKosLogoMark(size: logoSize);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         if (showMark) ...[
-          PantryKosLogoMark(size: logoSize),
+          if (enableHero)
+            Hero(tag: 'pantrykos_logo', child: mark)
+          else
+            mark,
           const SizedBox(width: 10),
         ],
         Text(

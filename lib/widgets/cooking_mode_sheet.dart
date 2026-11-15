@@ -12,8 +12,13 @@ import '../theme/app_theme.dart';
 /// with Dark Green (#14532D) controls (Start / Pause / Reset / +30s).
 class CookingModeSheet extends StatefulWidget {
   final RecipeModel recipe;
+  final VoidCallback? onRemoveUsedIngredients;
 
-  const CookingModeSheet({super.key, required this.recipe});
+  const CookingModeSheet({
+    super.key,
+    required this.recipe,
+    this.onRemoveUsedIngredients,
+  });
 
   @override
   State<CookingModeSheet> createState() => _CookingModeSheetState();
@@ -113,7 +118,7 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Selamat menikmati ${widget.recipe.title} hangat buatan sendiri. Hemat pengeluaran kos hari ini!',
+                  'Selamat menikmati ${widget.recipe.title} hangat buatan sendiri. Hapus bahan yang habis dipakai dari kulkas virtualmu?',
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontSize: 13.5,
@@ -121,36 +126,60 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                     height: 1.45,
                   ),
                 ),
-                const SizedBox(height: 22),
+                const SizedBox(height: 20),
                 SizedBox(
                   width: double.infinity,
                   child: DecoratedBox(
                     decoration: BoxDecoration(
                       color: _forestPrimary,
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(14),
                     ),
                     child: ElevatedButton.icon(
                       onPressed: () {
+                        widget.onRemoveUsedIngredients?.call();
                         Navigator.of(ctx).pop();
                         Navigator.of(context).pop();
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.transparent,
                         shadowColor: Colors.transparent,
-                        padding: const EdgeInsets.symmetric(vertical: 15),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
                       icon: const Icon(
-                        Icons.celebration_rounded,
+                        Icons.kitchen_rounded,
                         size: 18,
                         color: Colors.white,
                       ),
                       label: const Text(
-                        'Selesai Memasak',
+                        'Ya, Perbarui Kulkas',
                         style: TextStyle(
                           fontWeight: FontWeight.w800,
                           color: Colors.white,
                         ),
                       ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    onPressed: () {
+                      Navigator.of(ctx).pop();
+                      Navigator.of(context).pop();
+                    },
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor: _sageMint.withValues(alpha: 0.5),
+                      foregroundColor: _forestPrimary,
+                      side: const BorderSide(color: AppTheme.borderMint),
+                      padding: const EdgeInsets.symmetric(vertical: 13),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: const Text(
+                      'Tetap Simpan Stok',
+                      style: TextStyle(fontWeight: FontWeight.w700),
                     ),
                   ),
                 ),

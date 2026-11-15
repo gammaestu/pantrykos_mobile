@@ -6,6 +6,7 @@ import '../models/recipe_model.dart';
 import '../state/pantry_controller.dart';
 import '../theme/app_theme.dart';
 import '../widgets/animated_ingredient_chip.dart';
+import '../widgets/async_state_widgets.dart';
 import '../widgets/cooker_filter_header.dart';
 import '../widgets/pantrykos_logo.dart';
 import '../widgets/recipe_matcher_card.dart';
@@ -451,9 +452,287 @@ class _HomeScreenState extends State<HomeScreen> {
             setState(() {
               _activeIngredientIds.add(ingredientId);
             });
+            widget.controller.notifyChanged();
+          },
+          onConsumeIngredients: (usedIds) {
+            setState(() {
+              _activeIngredientIds.removeAll(usedIds);
+            });
+            widget.controller.notifyChanged();
           },
         ),
       ),
+    );
+  }
+
+  void _openServerInfoSheet() {
+    HapticFeedback.selectionClick();
+    final urlController = TextEditingController(
+      text: widget.controller.apiBaseUrl,
+    );
+    var useLiveAi = widget.controller.useLiveLaravelAi;
+
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setModalState) {
+            final bottomInset = MediaQuery.of(ctx).viewInsets.bottom;
+            return Padding(
+              padding: EdgeInsets.only(bottom: bottomInset),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: AppTheme.pureWhite,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(28),
+                  ),
+                  border: const Border(
+                    top: BorderSide(color: AppTheme.borderMint, width: 1.5),
+                  ),
+                  boxShadow: AppTheme.softShadow(ctx),
+                ),
+                padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+                child: SafeArea(
+                  top: false,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Center(
+                          child: Container(
+                            width: 42,
+                            height: 5,
+                            decoration: BoxDecoration(
+                              color: AppTheme.borderSlateLight,
+                              borderRadius: BorderRadius.circular(999),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: AppTheme.sageMint,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: AppTheme.mintLeaf),
+                              ),
+                              child: const Icon(
+                                Icons.dns_rounded,
+                                size: 20,
+                                color: AppTheme.forestEmerald,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            const Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Info Proyek & Server Status',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w800,
+                                      color: AppTheme.textForestCharcoal,
+                                    ),
+                                  ),
+                                  SizedBox(height: 2),
+                                  Text(
+                                    'PantryKos • Smart Culinary Kos Assistant',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: AppTheme.textSageGrey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: AppTheme.softMintTint,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: AppTheme.borderMint),
+                          ),
+                          child: const Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Tim Pengembang',
+                                style: TextStyle(
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppTheme.forestEmerald,
+                                ),
+                              ),
+                              SizedBox(height: 6),
+                              Text(
+                                '• Erlan Agam Putra\n• Gamma Estu Mahardika\n• Muhammad Fazli Nurfahmi',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  height: 1.5,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppTheme.textForestCharcoal,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        const Text(
+                          'Laravel API Base URL',
+                          style: TextStyle(
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w700,
+                            color: AppTheme.textForestCharcoal,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        TextField(
+                          controller: urlController,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: AppTheme.textForestCharcoal,
+                          ),
+                          decoration: InputDecoration(
+                            hintText: 'http://10.0.2.2:8000/api',
+                            prefixIcon: const Icon(
+                              Icons.link_rounded,
+                              size: 18,
+                              color: AppTheme.forestEmerald,
+                            ),
+                            filled: true,
+                            fillColor: AppTheme.scaffoldMintWhite,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(14),
+                              borderSide: const BorderSide(
+                                color: AppTheme.borderMint,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(14),
+                              borderSide: const BorderSide(
+                                color: AppTheme.borderMint,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(14),
+                              borderSide: const BorderSide(
+                                color: AppTheme.forestEmerald,
+                                width: 1.4,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppTheme.scaffoldMintWhite,
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(color: AppTheme.borderMint),
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      useLiveAi
+                                          ? 'Live Laravel AI'
+                                          : 'Offline Demo Simulation',
+                                      style: const TextStyle(
+                                        fontSize: 13.5,
+                                        fontWeight: FontWeight.w800,
+                                        color: AppTheme.textForestCharcoal,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      useLiveAi
+                                          ? 'Terhubung ke backend Laravel & Gemini Vision'
+                                          : 'Simulasi data lokal instan tanpa internet',
+                                      style: const TextStyle(
+                                        fontSize: 11.5,
+                                        color: AppTheme.textSageGrey,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Switch(
+                                value: useLiveAi,
+                                activeThumbColor: AppTheme.pureWhite,
+                                activeTrackColor: AppTheme.forestEmerald,
+                                inactiveThumbColor: AppTheme.forestEmerald,
+                                inactiveTrackColor: AppTheme.sageMint,
+                                onChanged: (val) {
+                                  setModalState(() => useLiveAi = val);
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              widget.controller.updateServerConfig(
+                                baseUrl: urlController.text,
+                                useLiveAi: useLiveAi,
+                              );
+                              Navigator.of(ctx).pop();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  behavior: SnackBarBehavior.floating,
+                                  backgroundColor: AppTheme.forestEmerald,
+                                  content: Text(
+                                    useLiveAi
+                                        ? 'Mode Live Laravel AI aktif (${widget.controller.apiBaseUrl})'
+                                        : 'Mode Offline Demo Simulation aktif',
+                                  ),
+                                ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppTheme.forestEmerald,
+                              foregroundColor: AppTheme.pureWhite,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              elevation: 0,
+                            ),
+                            icon: const Icon(Icons.check_rounded, size: 18),
+                            label: const Text(
+                              'Simpan Konfigurasi',
+                              style: TextStyle(fontWeight: FontWeight.w800),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -523,6 +802,21 @@ class _HomeScreenState extends State<HomeScreen> {
             surfaceTintColor: Colors.transparent,
             titleSpacing: 16,
             title: const PantryKosBrandLockup(),
+            actions: [
+              Padding(
+                padding: const EdgeInsets.only(right: 12),
+                child: IconButton(
+                  tooltip: 'Info Proyek & Server Status',
+                  onPressed: _openServerInfoSheet,
+                  style: IconButton.styleFrom(
+                    backgroundColor: AppTheme.pureWhite,
+                    foregroundColor: AppTheme.forestEmerald,
+                    side: const BorderSide(color: AppTheme.borderMint),
+                  ),
+                  icon: const Icon(Icons.info_outline_rounded, size: 20),
+                ),
+              ),
+            ],
             flexibleSpace: FlexibleSpaceBar(
               collapseMode: CollapseMode.pin,
               background: SafeArea(
@@ -620,6 +914,41 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ),
                               ),
+                              if (_activeIngredientIds.isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 4),
+                                  child: InkWell(
+                                    onTap: () {
+                                      HapticFeedback.selectionClick();
+                                      setState(() {
+                                        _activeIngredientIds.clear();
+                                      });
+                                      widget.controller.notifyChanged();
+                                    },
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 7,
+                                        vertical: 2,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: AppTheme.sageMint,
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(
+                                          color: AppTheme.borderMint,
+                                        ),
+                                      ),
+                                      child: const Text(
+                                        'Reset',
+                                        style: TextStyle(
+                                          fontSize: 11.5,
+                                          fontWeight: FontWeight.w700,
+                                          color: AppTheme.forestEmerald,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               InkWell(
                                 onTap: _openManageIngredientsSheet,
                                 borderRadius: BorderRadius.circular(8),
@@ -695,49 +1024,14 @@ class _HomeScreenState extends State<HomeScreen> {
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16, 24, 16, 120),
-                child: Container(
-                  padding: const EdgeInsets.all(26),
-                  decoration: BoxDecoration(
-                    color: AppTheme.pureWhite,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: AppTheme.borderMint),
-                    boxShadow: AppTheme.softShadow(context),
-                  ),
-                  child: Column(
-                    children: [
-                      const Text('🍽️', style: TextStyle(fontSize: 40)),
-                      const SizedBox(height: 12),
-                      Text(
-                        'Belum ada resep yang cocok dengan filter ini',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        'Coba pilih "Semua Alat" atau bersihkan kata kunci pencarianmu.',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      const SizedBox(height: 16),
-                      OutlinedButton.icon(
-                        onPressed: () {
-                          setState(() {
-                            _selectedTool = CookingTool.semuaAlat;
-                            _searchQuery = '';
-                            _searchController.clear();
-                          });
-                        },
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: AppTheme.forestEmerald,
-                          side: const BorderSide(
-                            color: AppTheme.mintLeaf,
-                          ),
-                        ),
-                        icon: const Icon(Icons.refresh_rounded, size: 18),
-                        label: const Text('Reset Filter Pencarian'),
-                      ),
-                    ],
-                  ),
+                child: NoMatchingRecipeWidget(
+                  onResetFilter: () {
+                    setState(() {
+                      _selectedTool = CookingTool.semuaAlat;
+                      _searchQuery = '';
+                      _searchController.clear();
+                    });
+                  },
                 ),
               ),
             )
