@@ -1,0 +1,492 @@
+{
+  "ingredients": [
+    {
+      "id": "mie_instan",
+      "name": "Mie Instan",
+      "category": "Karbohidrat",
+      "icon": "🍜",
+      "aliases": ["indomie", "mie goreng", "mie rebus", "mie sedaap", "sarimi", "supermi"]
+    },
+    {
+      "id": "beras",
+      "name": "Beras Putih",
+      "category": "Karbohidrat",
+      "icon": "🌾",
+      "aliases": ["beras", "rice", "beras pulen", "beras kos"]
+    },
+    {
+      "id": "nasi_putih",
+      "name": "Nasi Putih",
+      "category": "Karbohidrat",
+      "icon": "🍚",
+      "aliases": ["nasi", "nasi sisa", "nasi matang", "nasi magic com", "rice"]
+    },
+    {
+      "id": "roti_tawar",
+      "name": "Roti Tawar",
+      "category": "Karbohidrat",
+      "icon": "🍞",
+      "aliases": ["roti", "sari roti", "roti kupas", "toast", "bread"]
+    },
+    {
+      "id": "kentang",
+      "name": "Kentang",
+      "category": "Karbohidrat",
+      "icon": "🥔",
+      "aliases": ["kentang", "potato", "kentang kupas"]
+    },
+    {
+      "id": "telur",
+      "name": "Telur Ayam",
+      "category": "Protein",
+      "icon": "🥚",
+      "aliases": ["telur", "telor", "telur ayam negeri", "telur kampung", "egg"]
+    },
+    {
+      "id": "sosis",
+      "name": "Sosis",
+      "category": "Protein",
+      "icon": "🌭",
+      "aliases": ["sosis", "so nice", "kanzler", "kimbo", "sosis ayam", "sosis sapi"]
+    },
+    {
+      "id": "kornet",
+      "name": "Kornet Sapi",
+      "category": "Protein",
+      "icon": "🥫",
+      "aliases": ["kornet", "pronaz", "cip", "corned beef", "kornet sachet"]
+    },
+    {
+      "id": "tempe",
+      "name": "Tempe",
+      "category": "Protein",
+      "icon": "🫘",
+      "aliases": ["tempe", "tempe papan", "tempe daun", "tempe plastik"]
+    },
+    {
+      "id": "tahu",
+      "name": "Tahu Putih",
+      "category": "Protein",
+      "icon": "🧊",
+      "aliases": ["tahu", "tahu putih", "tahu sutra", "tahu kuning", "tofu"]
+    },
+    {
+      "id": "bakso",
+      "name": "Bakso Sapi",
+      "category": "Protein",
+      "icon": "🍡",
+      "aliases": ["bakso", "pentol", "bakso sumber selera", "meatball"]
+    },
+    {
+      "id": "keju",
+      "name": "Keju Lembaran",
+      "category": "Protein",
+      "icon": "🧀",
+      "aliases": ["keju", "kraft", "prochiz", "keju slice", "cheddar", "quick melt"]
+    },
+    {
+      "id": "sawi",
+      "name": "Sawi Hijau",
+      "category": "Sayur",
+      "icon": "🥬",
+      "aliases": ["sawi", "caisim", "pokcoy", "pakcoy", "sawi hijau", "mustard greens"]
+    },
+    {
+      "id": "kangkung",
+      "name": "Kangkung",
+      "category": "Sayur",
+      "icon": "🌿",
+      "aliases": ["kangkung", "kangkung segar", "water spinach"]
+    },
+    {
+      "id": "wortel",
+      "name": "Wortel",
+      "category": "Sayur",
+      "icon": "🥕",
+      "aliases": ["wortel", "carrot", "wortel lokal"]
+    },
+    {
+      "id": "kubis",
+      "name": "Kubis / Kol",
+      "category": "Sayur",
+      "icon": "🥗",
+      "aliases": ["kol", "kubis", "cabbage", "kol putih"]
+    },
+    {
+      "id": "tomat",
+      "name": "Tomat",
+      "category": "Sayur",
+      "icon": "🍅",
+      "aliases": ["tomat", "tomat merah", "tomato"]
+    },
+    {
+      "id": "daun_bawang",
+      "name": "Daun Bawang",
+      "category": "Sayur",
+      "icon": "🧅",
+      "aliases": ["daun bawang", "loncang", "prei", "scallion", "spring onion"]
+    },
+    {
+      "id": "bawang_merah",
+      "name": "Bawang Merah",
+      "category": "Bumbu Kos",
+      "icon": "🧅",
+      "aliases": ["bawang merah", "brambang", "shallot"]
+    },
+    {
+      "id": "bawang_putih",
+      "name": "Bawang Putih",
+      "category": "Bumbu Kos",
+      "icon": "🧄",
+      "aliases": ["bawang putih", "garlic", "bawang"]
+    },
+    {
+      "id": "cabai_rawit",
+      "name": "Cabai Rawit",
+      "category": "Bumbu Kos",
+      "icon": "🌶️",
+      "aliases": ["cabai", "cabe", "cabai rawit", "cabe setan", "lombok", "chili"]
+    },
+    {
+      "id": "kecap_manis",
+      "name": "Kecap Manis",
+      "category": "Bumbu Kos",
+      "icon": "🫙",
+      "aliases": ["kecap", "kecap bango", "kecap abc", "kecap sedap", "kecap sachet"]
+    },
+    {
+      "id": "saus_sambal",
+      "name": "Saus Sambal",
+      "category": "Bumbu Kos",
+      "icon": "🧴",
+      "aliases": ["saos", "saus", "saus abc", "saus indofood", "chili sauce"]
+    },
+    {
+      "id": "margarin",
+      "name": "Margarin",
+      "category": "Bumbu Kos",
+      "icon": "🧈",
+      "aliases": ["margarin", "blue band", "forvita", "mentega", "butter"]
+    }
+  ],
+  "recipes": [
+    {
+      "id": "nasi_telur_ceplok_kecap",
+      "title": "Nasi Telur Ceplok Bawang Kecap",
+      "image_url": "assets/images/recipes/nasi_telur_kecap.jpg",
+      "cook_time_min": 7,
+      "estimated_cost": 8000,
+      "tool_type": "Teflon",
+      "main_ingredients": ["nasi_putih", "telur", "bawang_putih", "kecap_manis"],
+      "optional_seasonings": ["Cabai rawit iris", "Minyak goreng", "Merica bubuk"],
+      "steps": [
+        {
+          "step_number": 1,
+          "instruction": "Geprek dan cincang kasar bawang putih agar aromanya keluar saat ditumis."
+        },
+        {
+          "step_number": 2,
+          "instruction": "Panaskan sedikit minyak atau margarin di teflon, ceplok telur dan biarkan bagian putihnya mengeras.",
+          "timer_seconds": 120
+        },
+        {
+          "step_number": 3,
+          "instruction": "Masukkan bawang putih cincang dan tuang kecap manis di pinggir teflon hingga meletup harum, lalu sajikan di atas nasi hangat.",
+          "timer_seconds": 60
+        }
+      ]
+    },
+    {
+      "id": "nasgor_mawut_rice_cooker",
+      "title": "Nasi Goreng Mawut Rice Cooker",
+      "image_url": "assets/images/recipes/nasgor_mawut.jpg",
+      "cook_time_min": 18,
+      "estimated_cost": 12000,
+      "tool_type": "Rice Cooker",
+      "main_ingredients": ["nasi_putih", "mie_instan", "telur", "sawi", "kecap_manis"],
+      "optional_seasonings": ["Bawang merah goreng", "Bumbu mie instan", "Saus sambal"],
+      "steps": [
+        {
+          "step_number": 1,
+          "instruction": "Tekan tombol Cook pada rice cooker dan panaskan margarin atau minyak goreng di dalam panci.",
+          "timer_seconds": 120
+        },
+        {
+          "step_number": 2,
+          "instruction": "Orak-arik telur hingga setengah matang lalu masukkan sawi hijau yang sudah dipotong.",
+          "timer_seconds": 150
+        },
+        {
+          "step_number": 3,
+          "instruction": "Masukkan mie instan yang sudah direbus sebentar, nasi putih, kecap manis, dan bumbu mie, lalu aduk rata hingga harum.",
+          "timer_seconds": 240
+        }
+      ]
+    },
+    {
+      "id": "mie_tektek_panci_listrik",
+      "title": "Mie Tek-Tek Anak Kos Kuah Kental",
+      "image_url": "assets/images/recipes/mie_tektek.jpg",
+      "cook_time_min": 10,
+      "estimated_cost": 10000,
+      "tool_type": "Panci Listrik",
+      "main_ingredients": ["mie_instan", "telur", "sawi", "bawang_merah", "cabai_rawit"],
+      "optional_seasonings": ["Kecap manis", "Saus sambal", "Bawang goreng"],
+      "steps": [
+        {
+          "step_number": 1,
+          "instruction": "Iris tipis bawang merah dan cabai rawit, lalu tumis sebentar di panci listrik dengan 1 sendok minyak.",
+          "timer_seconds": 90
+        },
+        {
+          "step_number": 2,
+          "instruction": "Tuang 350 ml air dan tunggu hingga mendidih, lalu masukkan mie instan serta sawi hijau.",
+          "timer_seconds": 180
+        },
+        {
+          "step_number": 3,
+          "instruction": "Kocok lepas telur dan tuang perlahan sambil diaduk agar kuah mengental bersama bumbu mie.",
+          "timer_seconds": 90
+        }
+      ]
+    },
+    {
+      "id": "omelet_mie_sosis_crispy",
+      "title": "Omelet Mie Sosis Crispy",
+      "image_url": "assets/images/recipes/omelet_mie_sosis.jpg",
+      "cook_time_min": 12,
+      "estimated_cost": 11000,
+      "tool_type": "Teflon",
+      "main_ingredients": ["mie_instan", "telur", "sosis", "daun_bawang"],
+      "optional_seasonings": ["Bumbu mie instan", "Saus sambal", "Margarin"],
+      "steps": [
+        {
+          "step_number": 1,
+          "instruction": "Rebus mie instan hingga lunak lalu tiriskan airnya dan campur dengan bumbu mie.",
+          "timer_seconds": 180
+        },
+        {
+          "step_number": 2,
+          "instruction": "Kocok telur bersama irisan sosis dan daun bawang, lalu aduk rata bersama mie.",
+          "timer_seconds": 45
+        },
+        {
+          "step_number": 3,
+          "instruction": "Masak adonan di teflon api kecil-sedang hingga kedua sisi keemasan dan renyah.",
+          "timer_seconds": 240
+        }
+      ]
+    },
+    {
+      "id": "sup_telur_sawi_bakso",
+      "title": "Sup Telur Sawi Bakso Hangat",
+      "image_url": "assets/images/recipes/sup_telur_bakso.jpg",
+      "cook_time_min": 12,
+      "estimated_cost": 13000,
+      "tool_type": "Panci Listrik",
+      "main_ingredients": ["telur", "bakso", "sawi", "wortel", "bawang_putih"],
+      "optional_seasonings": ["Garam", "Kaldu jamur", "Merica bubuk", "Daun bawang"],
+      "steps": [
+        {
+          "step_number": 1,
+          "instruction": "Didihkan 450 ml air di panci listrik bersama bawang putih geprek dan irisan wortel.",
+          "timer_seconds": 240
+        },
+        {
+          "step_number": 2,
+          "instruction": "Masukkan irisan bakso sapi dan sawi hijau, masak hingga wortel dan sawi empuk.",
+          "timer_seconds": 150
+        },
+        {
+          "step_number": 3,
+          "instruction": "Tuang telur kocok perlahan sambil diputar dengan garpu membentuk serabut sup lembut.",
+          "timer_seconds": 60
+        }
+      ]
+    },
+    {
+      "id": "nasi_liwet_kornet_magic_com",
+      "title": "Nasi Liwet Kornet Rice Cooker",
+      "image_url": "assets/images/recipes/nasi_liwet_kornet.jpg",
+      "cook_time_min": 25,
+      "estimated_cost": 15000,
+      "tool_type": "Rice Cooker",
+      "main_ingredients": ["beras", "kornet", "bawang_merah", "bawang_putih", "cabai_rawit"],
+      "optional_seasonings": ["Kaldu bubuk", "Daun salam", "Margarin"],
+      "steps": [
+        {
+          "step_number": 1,
+          "instruction": "Cuci beras hingga bersih, lalu masukkan ke panci rice cooker dengan takaran air normal."
+        },
+        {
+          "step_number": 2,
+          "instruction": "Tambahkan irisan bawang merah, bawang putih, cabai rawit utuh, sedikit margarin, dan kornet sapi di atas beras."
+        },
+        {
+          "step_number": 3,
+          "instruction": "Tekan mode Cook hingga matang sempurna, lalu aduk nasi liwet sebelum disajikan.",
+          "timer_seconds": 1200
+        }
+      ]
+    },
+    {
+      "id": "tempe_orek_pedas_manis",
+      "title": "Tempe Orek Pedas Manis Praktis",
+      "image_url": "assets/images/recipes/tempe_orek.jpg",
+      "cook_time_min": 12,
+      "estimated_cost": 7000,
+      "tool_type": "Teflon",
+      "main_ingredients": ["tempe", "bawang_merah", "bawang_putih", "cabai_rawit", "kecap_manis"],
+      "optional_seasonings": ["Garam", "Gula pasir", "Minyak goreng"],
+      "steps": [
+        {
+          "step_number": 1,
+          "instruction": "Potong tempe berbentuk dadu kecil lalu goreng di teflon sampai setengah kering.",
+          "timer_seconds": 240
+        },
+        {
+          "step_number": 2,
+          "instruction": "Tumis irisan bawang merah, bawang putih, dan cabai rawit hingga harum.",
+          "timer_seconds": 90
+        },
+        {
+          "step_number": 3,
+          "instruction": "Masukkan tempe kembali bersama kecap manis dan sedikit air, aduk hingga bumbu meresap.",
+          "timer_seconds": 150
+        }
+      ]
+    },
+    {
+      "id": "tumis_kangkung_tahu_garlic",
+      "title": "Tumis Kangkung Tahu Bawang Putih",
+      "image_url": "assets/images/recipes/tumis_kangkung_tahu.jpg",
+      "cook_time_min": 10,
+      "estimated_cost": 9000,
+      "tool_type": "Teflon",
+      "main_ingredients": ["kangkung", "tahu", "bawang_putih", "cabai_rawit", "saus_sambal"],
+      "optional_seasonings": ["Garam", "Gula", "Minyak goreng"],
+      "steps": [
+        {
+          "step_number": 1,
+          "instruction": "Potong dadu tahu putih dan goreng sebentar di teflon hingga berkulit.",
+          "timer_seconds": 180
+        },
+        {
+          "step_number": 2,
+          "instruction": "Tumis bawang putih cincang dan cabai rawit hingga wangi.",
+          "timer_seconds": 60
+        },
+        {
+          "step_number": 3,
+          "instruction": "Masukkan kangkung, tahu, dan saus sambal, aduk cepat di api besar agar kangkung tetap hijau renyah.",
+          "timer_seconds": 120
+        }
+      ]
+    },
+    {
+      "id": "seblak_mie_sosis_panci",
+      "title": "Seblak Mie Sosis Kuah Pedas",
+      "image_url": "assets/images/recipes/seblak_mie_sosis.jpg",
+      "cook_time_min": 12,
+      "estimated_cost": 12000,
+      "tool_type": "Panci Listrik",
+      "main_ingredients": ["mie_instan", "sosis", "telur", "kubis", "cabai_rawit", "bawang_putih"],
+      "optional_seasonings": ["Kencur bubuk", "Bumbu mie instan", "Saus sambal"],
+      "steps": [
+        {
+          "step_number": 1,
+          "instruction": "Tumis bawang putih dan cabai rawit halus di panci listrik hingga harum.",
+          "timer_seconds": 90
+        },
+        {
+          "step_number": 2,
+          "instruction": "Tuang air 350 ml lalu masukkan potongan sosis, kubis, dan mie instan.",
+          "timer_seconds": 180
+        },
+        {
+          "step_number": 3,
+          "instruction": "Tambahkan telur kocok dan bumbu, masak hingga kuah merah pekat menggugah selera.",
+          "timer_seconds": 90
+        }
+      ]
+    },
+    {
+      "id": "nasi_gurih_bawang_rice_cooker",
+      "title": "Nasi Gurih Bawang Putih Rice Cooker",
+      "image_url": "assets/images/recipes/nasi_gurih_bawang.jpg",
+      "cook_time_min": 22,
+      "estimated_cost": 11000,
+      "tool_type": "Rice Cooker",
+      "main_ingredients": ["beras", "telur", "bawang_putih", "margarin", "daun_bawang"],
+      "optional_seasonings": ["Garam", "Kaldu bubuk", "Kecap asin"],
+      "steps": [
+        {
+          "step_number": 1,
+          "instruction": "Masukkan beras yang sudah dicuci bersama air, bawang putih geprek, dan margarin ke rice cooker."
+        },
+        {
+          "step_number": 2,
+          "instruction": "Tekan Cook dan biarkan matang hingga tombol berpindah ke Warm.",
+          "timer_seconds": 1080
+        },
+        {
+          "step_number": 3,
+          "instruction": "Ceplok telur dan taburi irisan daun bawang di atas nasi hangat gurih.",
+          "timer_seconds": 120
+        }
+      ]
+    },
+    {
+      "id": "orak_arik_tahu_telur_panci",
+      "title": "Orak-Arik Tahu Telur Bumbu Kos",
+      "image_url": "assets/images/recipes/orak_arik_tahu_telur.jpg",
+      "cook_time_min": 10,
+      "estimated_cost": 9000,
+      "tool_type": "Panci Listrik",
+      "main_ingredients": ["tahu", "telur", "tomat", "bawang_merah", "kecap_manis"],
+      "optional_seasonings": ["Garam", "Merica", "Cabai rawit"],
+      "steps": [
+        {
+          "step_number": 1,
+          "instruction": "Hancurkan tahu putih secara kasar, lalu tumis irisan bawang merah dan tomat di panci listrik.",
+          "timer_seconds": 120
+        },
+        {
+          "step_number": 2,
+          "instruction": "Masukkan tahu dan telur kocok, orak-arik perlahan hingga tercampur rata.",
+          "timer_seconds": 150
+        },
+        {
+          "step_number": 3,
+          "instruction": "Tambahkan kecap manis dan koreksi rasa sebelum disajikan.",
+          "timer_seconds": 60
+        }
+      ]
+    },
+    {
+      "id": "nasi_tim_kentang_sosis_rice_cooker",
+      "title": "Nasi Tim Kentang Sosis Rice Cooker",
+      "image_url": "assets/images/recipes/nasi_tim_sosis.jpg",
+      "cook_time_min": 24,
+      "estimated_cost": 14000,
+      "tool_type": "Rice Cooker",
+      "main_ingredients": ["beras", "sosis", "kentang", "wortel", "kecap_manis"],
+      "optional_seasonings": ["Bawang putih bubuk", "Margarin", "Merica"],
+      "steps": [
+        {
+          "step_number": 1,
+          "instruction": "Potong dadu kecil kentang, wortel, dan sosis agar cepat matang merata."
+        },
+        {
+          "step_number": 2,
+          "instruction": "Campurkan beras bersih, air sedikit lebih banyak agar pulen, kecap manis, serta potongan sayur dan sosis di rice cooker."
+        },
+        {
+          "step_number": 3,
+          "instruction": "Masak dengan mode Cook sampai matang harum dan pulen.",
+          "timer_seconds": 1200
+        }
+      ]
+    }
+  ]
+}
