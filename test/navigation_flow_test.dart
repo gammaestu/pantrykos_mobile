@@ -1,9 +1,27 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pantrykos_mobile/main.dart';
-import 'package:pantrykos_mobile/models/recipe_model.dart';
-import 'package:pantrykos_mobile/widgets/async_state_widgets.dart';
-import 'package:pantrykos_mobile/widgets/cooking_mode_sheet.dart';
+import 'package:pantrykos_mobile/presentation/models/ui_recipe_model.dart';
+import 'package:pantrykos_mobile/presentation/providers/repository_providers.dart';
+import 'package:pantrykos_mobile/presentation/widgets/async_state_widgets.dart';
+import 'package:pantrykos_mobile/presentation/widgets/cooking_mode_sheet.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class _OfflineDioAdapter implements HttpClientAdapter {
+  @override
+  void close({bool force = false}) {}
+
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<List<int>>? requestStream,
+    Future<void>? cancelFuture,
+  ) async {
+    return ResponseBody.fromString('offline', 503);
+  }
+}
 
 /// Smoke test that walks through every major flow at phone size and fails on
 /// any layout overflow or framework exception.
@@ -23,7 +41,17 @@ void main() {
       await tester.pump(Duration(milliseconds: ms));
     }
 
-    await tester.pumpWidget(const PantryKosApp());
+    SharedPreferences.setMockInitialValues(<String, Object>{});
+    final offlineDio = Dio()..httpClientAdapter = _OfflineDioAdapter();
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          dioProvider.overrideWithValue(offlineDio),
+        ],
+        child: const PantryKosApp(),
+      ),
+    );
     await settle(900);
     expect(find.text('PantryKos'), findsOneWidget);
     expect(find.text('Memindai bahan anak kos...'), findsOneWidget);
@@ -44,7 +72,7 @@ void main() {
     await settle(900);
 
     // Recipe detail + cooking mode
-    await tester.tap(find.text('Nasi Telur Ceplok Bawang Putih Kecap'));
+    await tester.tap(find.text('Nasi Telur Ceplok Bawang Kecap'));
     await settle(900);
     expect(find.text('Mulai Mode Masak'), findsOneWidget);
     await tester.tap(find.text('Mulai Mode Masak'));
@@ -98,17 +126,19 @@ void main() {
     await settle();
     expect(find.byType(NoMatchingRecipeWidget), findsNothing);
 
-    // Info Proyek & Server Status Bottom Sheet
+    // Info Proyek & AI Status Bottom Sheet
     await tester.tap(find.byIcon(Icons.info_outline_rounded));
     await settle(900);
-    expect(find.text('Info Proyek & Server Status'), findsOneWidget);
+    expect(find.text('Info Proyek & AI Status'), findsOneWidget);
     expect(find.textContaining('Erlan Agam Putra'), findsOneWidget);
     expect(find.textContaining('Gamma Estu Mahardika'), findsOneWidget);
     expect(find.textContaining('Muhammad Fazli Nurfahmi'), findsOneWidget);
-    expect(find.text('Offline Demo Simulation'), findsOneWidget);
+    expect(find.text('Live Gemini AI'), findsOneWidget);
+    await tester.ensureVisible(find.byType(Switch));
     await tester.tap(find.byType(Switch));
     await settle();
-    expect(find.text('Live Laravel AI'), findsOneWidget);
+    expect(find.text('Offline Demo Simulation'), findsOneWidget);
+    await tester.ensureVisible(find.text('Simpan Konfigurasi'));
     await tester.tap(find.text('Simpan Konfigurasi'));
     await settle(900);
 

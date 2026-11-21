@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'dart:ui' show PathMetric;
 import 'package:flutter/material.dart';
-import '../../screens/main_navigation.dart';
-import '../../theme/app_theme.dart';
-import '../../widgets/pantrykos_logo.dart';
+import '../../core/theme/app_theme.dart';
+import '../widgets/pantrykos_logo.dart';
+import 'main_navigation.dart';
 
 /// Multi-stage choreographed Splash & Loading Screen for PantryKos (2.8s).
 ///

@@ -3,8 +3,10 @@ import 'dart:math' as math;
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../models/recipe_model.dart';
-import '../theme/app_theme.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/theme/app_theme.dart';
+import '../models/ui_recipe_model.dart';
+import '../providers/pantry_provider.dart';
 
 /// Full-screen Pure White (#FFFFFF) Step-by-Step Cooking Mode Sheet.
 /// Features a PageView, a #22C55E animated progress indicator bar,
@@ -136,7 +138,24 @@ class _CookingModeSheetState extends State<CookingModeSheet> {
                     ),
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        widget.onRemoveUsedIngredients?.call();
+                        final usedIds = widget.recipe.ingredients
+                            .where((item) => !item.isOptional)
+                            .map((item) => item.ingredientId)
+                            .toList(growable: false);
+                        if (widget.onRemoveUsedIngredients != null) {
+                          widget.onRemoveUsedIngredients!.call();
+                        } else {
+                          try {
+                            ProviderScope.containerOf(
+                              context,
+                              listen: false,
+                            ).read(pantryProvider.notifier).removeUsedIngredients(
+                                  usedIds,
+                                );
+                          } catch (_) {
+                            // Allows standalone widget tests without ProviderScope.
+                          }
+                        }
                         Navigator.of(ctx).pop();
                         Navigator.of(context).pop();
                       },

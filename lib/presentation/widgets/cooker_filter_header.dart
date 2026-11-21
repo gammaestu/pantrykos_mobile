@@ -1,8 +1,8 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../models/recipe_model.dart';
-import '../theme/app_theme.dart';
+import '../../core/theme/app_theme.dart';
+import '../models/ui_recipe_model.dart';
 
 /// Ultra-Thin Sticky Tool Filter Strip (SliverPersistentHeaderDelegate).
 /// Places the cooking tool filter ("Semua Alat", "Rice Cooker", "Teflon",

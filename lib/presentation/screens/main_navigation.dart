@@ -1,30 +1,24 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../state/pantry_controller.dart';
-import '../theme/app_theme.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/theme/app_theme.dart';
+import '../providers/pantry_provider.dart';
 import 'bookmark_screen.dart';
 import 'home_screen.dart';
 import 'scanner_ui_screen.dart';
 
 /// Root shell of PantryKos: two tabs ("Kulkas Kos" and "Tersimpan") plus a
 /// prominent center "Scan AI" action inside a floating glassmorphic dock.
-class MainNavigation extends StatefulWidget {
+class MainNavigation extends ConsumerStatefulWidget {
   const MainNavigation({super.key});
 
   @override
-  State<MainNavigation> createState() => _MainNavigationState();
+  ConsumerState<MainNavigation> createState() => _MainNavigationState();
 }
 
-class _MainNavigationState extends State<MainNavigation> {
-  final PantryController _controller = PantryController();
+class _MainNavigationState extends ConsumerState<MainNavigation> {
   int _tabIndex = 0;
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
 
   void _selectTab(int index) {
     if (index == _tabIndex) return;
@@ -142,11 +136,12 @@ class _MainNavigationState extends State<MainNavigation> {
 
   Future<void> _openScanner() async {
     HapticFeedback.mediumImpact();
+    final activeIds = ref.read(pantryProvider).activeIngredientIds;
     final scannedIds = await Navigator.of(context).push<Set<String>>(
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) =>
             ScannerUiScreen(
-              currentIngredientIds: _controller.activeIngredientIds,
+              currentIngredientIds: activeIds,
             ),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           final curved = CurvedAnimation(
@@ -166,25 +161,33 @@ class _MainNavigationState extends State<MainNavigation> {
 
     if (scannedIds == null || scannedIds.isEmpty || !mounted) return;
 
-    _controller.addIngredients(scannedIds);
+    ref
+        .read(pantryProvider.notifier)
+        .addDetectedIngredients(scannedIds.toList(growable: false));
     final messenger = ScaffoldMessenger.of(context);
     messenger.clearSnackBars();
     messenger.showSnackBar(
       SnackBar(
         behavior: SnackBarBehavior.floating,
         margin: const EdgeInsets.fromLTRB(16, 0, 16, 112),
-        backgroundColor: AppTheme.forestEmerald,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        backgroundColor: AppTheme.sageMint,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+          side: const BorderSide(color: AppTheme.forestEmerald, width: 1.2),
+        ),
         content: Row(
           children: [
-            const Icon(Icons.auto_awesome_rounded, color: Colors.white),
+            const Icon(
+              Icons.auto_awesome_rounded,
+              color: AppTheme.forestEmerald,
+            ),
             const SizedBox(width: 10),
             Expanded(
               child: Text(
                 '${scannedIds.length} bahan hasil AI Scan masuk Kulkas Virtual!',
                 style: const TextStyle(
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
+                  fontWeight: FontWeight.w800,
+                  color: AppTheme.forestEmerald,
                 ),
               ),
             ),
@@ -196,15 +199,17 @@ class _MainNavigationState extends State<MainNavigation> {
 
   @override
   Widget build(BuildContext context) {
+    final bookmarkCount = ref.watch(
+      pantryProvider.select((s) => s.bookmarkedIds.length),
+    );
+
     final Widget page = _tabIndex == 0
         ? HomeScreen(
             key: const ValueKey('tab_home'),
-            controller: _controller,
             onOpenScanner: _openScanner,
           )
         : BookmarkScreen(
             key: const ValueKey('tab_bookmark'),
-            controller: _controller,
             onGoToKulkas: () => _selectTab(0),
           );
 
@@ -237,14 +242,11 @@ class _MainNavigationState extends State<MainNavigation> {
               child: SafeArea(
                 top: false,
                 minimum: const EdgeInsets.only(bottom: 14),
-                child: ListenableBuilder(
-                  listenable: _controller,
-                  builder: (context, _) => _FloatingDock(
-                    currentIndex: _tabIndex,
-                    bookmarkCount: _controller.bookmarkedRecipeIds.length,
-                    onSelectTab: _selectTab,
-                    onScan: _openScanner,
-                  ),
+                child: _FloatingDock(
+                  currentIndex: _tabIndex,
+                  bookmarkCount: bookmarkCount,
+                  onSelectTab: _selectTab,
+                  onScan: _openScanner,
                 ),
               ),
             ),

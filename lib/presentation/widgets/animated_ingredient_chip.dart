@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../models/recipe_model.dart';
-import '../theme/app_theme.dart';
+import '../../core/theme/app_theme.dart';
+import '../models/ui_recipe_model.dart';
 
 /// Custom interactive ingredient chip for "Kulkas Virtual".
 /// Uses [AnimatedContainer], [AnimatedScale], and [HapticFeedback.lightImpact]

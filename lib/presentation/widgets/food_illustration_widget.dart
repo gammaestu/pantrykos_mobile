@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import '../models/recipe_model.dart';
+import '../models/ui_recipe_model.dart';
 
 /// Displays a high-resolution culinary image with a rich custom-painted
 /// food illustration backdrop and multi-stop gradient scrim overlay.
@@ -33,24 +33,25 @@ class RecipeHeroImage extends StatelessWidget {
           ),
         ),
 
-        // 2. High-res network food photo with smooth fade-in
-        Image.network(
-          recipe.imageUrl,
-          fit: BoxFit.cover,
-          frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-            if (wasSynchronouslyLoaded) return child;
-            return AnimatedOpacity(
-              opacity: frame == null ? 0.0 : 1.0,
-              duration: const Duration(milliseconds: 450),
-              curve: Curves.easeOutCubic,
-              child: child,
-            );
-          },
-          errorBuilder: (context, error, stackTrace) {
-            // Keep the rich culinary illustration visible when offline
-            return const SizedBox.shrink();
-          },
-        ),
+        // 2. High-res network food photo with smooth fade-in (when remote URL)
+        if (recipe.imageUrl.startsWith('http'))
+          Image.network(
+            recipe.imageUrl,
+            fit: BoxFit.cover,
+            frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+              if (wasSynchronouslyLoaded) return child;
+              return AnimatedOpacity(
+                opacity: frame == null ? 0.0 : 1.0,
+                duration: const Duration(milliseconds: 450),
+                curve: Curves.easeOutCubic,
+                child: child,
+              );
+            },
+            errorBuilder: (context, error, stackTrace) {
+              // Keep the rich culinary illustration visible when offline
+              return const SizedBox.shrink();
+            },
+          ),
 
         // 3. Multi-stop gradient scrim overlay for crisp badge & title contrast
         if (showBottomScrim)

@@ -5,6 +5,7 @@ enum IngredientCategory {
   semua('Semua', Icons.kitchen_rounded),
   karbohidrat('Karbohidrat', Icons.rice_bowl_rounded),
   protein('Protein', Icons.egg_alt_rounded),
+  sayur('Sayur', Icons.eco_rounded),
   bumbuKos('Bumbu Kos', Icons.spa_rounded);
 
   final String label;

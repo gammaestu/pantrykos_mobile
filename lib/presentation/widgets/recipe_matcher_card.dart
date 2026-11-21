@@ -1,8 +1,8 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../models/recipe_model.dart';
-import '../theme/app_theme.dart';
+import '../../core/theme/app_theme.dart';
+import '../models/ui_recipe_model.dart';
 import 'food_illustration_widget.dart';
 
 /// Smart Recipe Matcher Card styled in the Elegant Midnight Navy Dark Theme.

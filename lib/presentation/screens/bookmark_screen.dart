@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../data/mock_pantry_data.dart';
-import '../models/recipe_model.dart';
-import '../state/pantry_controller.dart';
-import '../theme/app_theme.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/theme/app_theme.dart';
+import '../mappers/pantry_ui_mapper.dart';
+import '../models/ui_recipe_model.dart';
+import '../providers/pantry_provider.dart';
 import '../widgets/food_illustration_widget.dart';
 import 'recipe_detail_screen.dart';
 
@@ -19,47 +20,52 @@ enum _BookmarkFilter {
 
 /// "Tersimpan" tab: ultra-compact header + single-line filter pills so saved
 /// recipe cards are visible immediately. Supports swipe-to-remove and a
-/// tap-to-unbookmark collapse animation (with undo), plus a custom dark
+/// tap-to-unbookmark collapse animation (with undo), plus a custom clean
 /// empty state.
-class BookmarkScreen extends StatefulWidget {
-  final PantryController controller;
+class BookmarkScreen extends ConsumerStatefulWidget {
   final VoidCallback onGoToKulkas;
 
   const BookmarkScreen({
     super.key,
-    required this.controller,
     required this.onGoToKulkas,
   });
 
   @override
-  State<BookmarkScreen> createState() => _BookmarkScreenState();
+  ConsumerState<BookmarkScreen> createState() => _BookmarkScreenState();
 }
 
-class _BookmarkScreenState extends State<BookmarkScreen> {
+class _BookmarkScreenState extends ConsumerState<BookmarkScreen> {
   static const Color _bgNavy = AppTheme.scaffoldMintWhite;
   static const Color _cardSlate = AppTheme.pureWhite;
   static const Color _borderSlate = AppTheme.borderNeutral;
 
   _BookmarkFilter _filter = _BookmarkFilter.semua;
 
-  PantryController get _c => widget.controller;
-
-  void _openDetail(RecipeModel recipe) {
+  void _openDetail(RecipeModel recipe, PantryState pantryState) {
+    final notifier = ref.read(pantryProvider.notifier);
+    final ingredientIcons = <String, String>{
+      for (final ing in pantryState.masterIngredients) ing.id: ing.icon,
+    };
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => RecipeDetailScreen(
           recipe: recipe,
-          activeIngredientIds: _c.activeIngredientIds,
-          initialBookmarked: _c.isBookmarked(recipe.id),
-          onBookmarkToggle: () => _c.toggleBookmark(recipe.id),
-          onTogglePantryIngredient: (id) => _c.addIngredients([id]),
+          activeIngredientIds: pantryState.activeIngredientIds,
+          initialBookmarked: pantryState.bookmarkedIds.contains(recipe.id),
+          onBookmarkToggle: () => notifier.toggleBookmark(recipe.id),
+          onTogglePantryIngredient: (id) =>
+              notifier.addDetectedIngredients(<String>[id]),
+          onConsumeIngredients: (usedIds) =>
+              notifier.removeUsedIngredients(usedIds.toList(growable: false)),
+          ingredientIcons: ingredientIcons,
         ),
       ),
     );
   }
 
   void _removeBookmark(RecipeModel recipe) {
-    _c.toggleBookmark(recipe.id);
+    final notifier = ref.read(pantryProvider.notifier);
+    notifier.toggleBookmark(recipe.id);
     if (!mounted) return;
     final messenger = ScaffoldMessenger.of(context);
     messenger.clearSnackBars();
@@ -86,7 +92,7 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
         action: SnackBarAction(
           label: 'Urungkan',
           textColor: AppTheme.forestEmerald,
-          onPressed: () => _c.toggleBookmark(recipe.id),
+          onPressed: () => notifier.toggleBookmark(recipe.id),
         ),
       ),
     );
@@ -94,170 +100,174 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: _c,
-      builder: (context, _) {
-        final saved =
-            MockPantryData.recipes
-                .where((r) => _c.isBookmarked(r.id))
-                .map((r) => r.evaluateMatch(_c.activeIngredientIds))
-                .toList()
-              ..sort((a, b) => a.missingCount.compareTo(b.missingCount));
+    final pantryState = ref.watch(pantryProvider);
+    final ingredientById = {
+      for (final ing in pantryState.masterIngredients) ing.id: ing,
+    };
 
-        final readyCount = saved
-            .where((m) => m.tier == RecipeMatchTier.readyToCook)
-            .length;
+    final saved =
+        pantryState.recipes
+            .where((r) => pantryState.bookmarkedIds.contains(r.id))
+            .map(
+              (r) => PantryUiMapper.toUiRecipe(
+                r,
+                ingredientById: ingredientById,
+              ).evaluateMatch(pantryState.activeIngredientIds),
+            )
+            .toList()
+          ..sort((a, b) => a.missingCount.compareTo(b.missingCount));
 
-        final filtered = saved.where((m) {
-          switch (_filter) {
-            case _BookmarkFilter.semua:
-              return true;
-            case _BookmarkFilter.siapMasak:
-              return m.tier == RecipeMatchTier.readyToCook;
-            case _BookmarkFilter.riceCooker:
-              return m.recipe.cookingTool == CookingTool.riceCooker;
-          }
-        }).toList();
+    final readyCount =
+        saved.where((m) => m.tier == RecipeMatchTier.readyToCook).length;
 
-        Widget content;
-        if (saved.isEmpty) {
-          content = _BookmarkEmptyState(
-            key: const ValueKey('empty_all'),
-            icon: Icons.bookmark_border_rounded,
-            title: 'Belum Ada Resep Tersimpan',
-            subtitle:
-                'Ketuk ikon hati pada resep favoritmu agar mudah ditemukan lagi.',
-            buttonLabel: 'Kembali ke Kulkas Virtual',
-            onPressed: widget.onGoToKulkas,
+    final filtered = saved.where((m) {
+      switch (_filter) {
+        case _BookmarkFilter.semua:
+          return true;
+        case _BookmarkFilter.siapMasak:
+          return m.tier == RecipeMatchTier.readyToCook;
+        case _BookmarkFilter.riceCooker:
+          return m.recipe.cookingTool == CookingTool.riceCooker;
+      }
+    }).toList();
+
+    Widget content;
+    if (saved.isEmpty) {
+      content = _BookmarkEmptyState(
+        key: const ValueKey('empty_all'),
+        icon: Icons.bookmark_border_rounded,
+        title: 'Belum Ada Resep Tersimpan',
+        subtitle:
+            'Ketuk ikon hati pada resep favoritmu agar mudah ditemukan lagi.',
+        buttonLabel: 'Kembali ke Kulkas Virtual',
+        onPressed: widget.onGoToKulkas,
+      );
+    } else if (filtered.isEmpty) {
+      content = _BookmarkEmptyState(
+        key: ValueKey('empty_${_filter.name}'),
+        icon: Icons.filter_alt_off_rounded,
+        title: 'Tidak Ada Resep di Filter Ini',
+        subtitle: 'Coba pilih filter "Semua" untuk melihat seluruh resep.',
+        buttonLabel: 'Tampilkan Semua',
+        onPressed: () => setState(() => _filter = _BookmarkFilter.semua),
+      );
+    } else {
+      content = ListView.builder(
+        key: ValueKey('list_${_filter.name}'),
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 136),
+        itemCount: filtered.length,
+        itemBuilder: (context, index) {
+          final match = filtered[index];
+          return _BookmarkTile(
+            key: ValueKey('bm_${match.recipe.id}'),
+            match: match,
+            index: index,
+            onOpen: () => _openDetail(match.recipe, pantryState),
+            onRemove: () => _removeBookmark(match.recipe),
           );
-        } else if (filtered.isEmpty) {
-          content = _BookmarkEmptyState(
-            key: ValueKey('empty_${_filter.name}'),
-            icon: Icons.filter_alt_off_rounded,
-            title: 'Tidak Ada Resep di Filter Ini',
-            subtitle: 'Coba pilih filter "Semua" untuk melihat seluruh resep.',
-            buttonLabel: 'Tampilkan Semua',
-            onPressed: () => setState(() => _filter = _BookmarkFilter.semua),
-          );
-        } else {
-          content = ListView.builder(
-            key: ValueKey('list_${_filter.name}'),
-            physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 136),
-            itemCount: filtered.length,
-            itemBuilder: (context, index) {
-              final match = filtered[index];
-              return _BookmarkTile(
-                key: ValueKey('bm_${match.recipe.id}'),
-                match: match,
-                index: index,
-                onOpen: () => _openDetail(match.recipe),
-                onRemove: () => _removeBookmark(match.recipe),
-              );
-            },
-          );
-        }
+        },
+      );
+    }
 
-        return Scaffold(
-          backgroundColor: _bgNavy,
-          body: SafeArea(
-            bottom: false,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Ultra-compact single-line header
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 14, 20, 10),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Resep Tersimpan',
-                              style: TextStyle(
-                                fontSize: 21,
-                                fontWeight: FontWeight.w800,
-                                color: AppTheme.textForestCharcoal,
-                                letterSpacing: -0.5,
-                              ),
-                            ),
-                            const SizedBox(height: 1),
-                            Text(
-                              '${saved.length} resep • $readyCount siap masak',
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: AppTheme.textSageGrey,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        width: 38,
-                        height: 38,
-                        decoration: BoxDecoration(
-                          color: _cardSlate,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: _borderSlate),
-                        ),
-                        child: const Icon(
-                          Icons.favorite_rounded,
-                          size: 18,
-                          color: Color(0xFFE11D48),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Single-line filter pills (38px)
-                SizedBox(
-                  height: 38,
-                  child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    physics: const BouncingScrollPhysics(),
-                    itemCount: _BookmarkFilter.values.length,
-                    separatorBuilder: (_, _) => const SizedBox(width: 8),
-                    itemBuilder: (context, i) {
-                      final f = _BookmarkFilter.values[i];
-                      final selected = f == _filter;
-                      return GestureDetector(
-                        onTap: () {
-                          HapticFeedback.selectionClick();
-                          setState(() => _filter = f);
-                        },
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 220),
-                          curve: Curves.easeOutCubic,
-                          height: 38,
-                          padding: const EdgeInsets.symmetric(horizontal: 13),
-                          decoration: BoxDecoration(
-                            color: selected
-                                ? AppTheme.forestEmerald
-                                : _cardSlate,
-                            borderRadius: BorderRadius.circular(999),
-                            border: Border.all(
-                              color: selected
-                                  ? AppTheme.forestEmerald
-                                  : AppTheme.borderSlateLight,
-                            ),
-                            boxShadow: selected
-                                ? [
-                                    BoxShadow(
-                                      color: AppTheme.forestEmerald
-                                          .withValues(alpha: 0.20),
-                                      blurRadius: 10,
-                                      offset: const Offset(0, 3),
-                                    ),
-                                  ]
-                                : null,
+    return Scaffold(
+      backgroundColor: _bgNavy,
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Ultra-compact single-line header
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 14, 20, 10),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Resep Tersimpan',
+                          style: TextStyle(
+                            fontSize: 21,
+                            fontWeight: FontWeight.w800,
+                            color: AppTheme.textForestCharcoal,
+                            letterSpacing: -0.5,
                           ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
+                        ),
+                        const SizedBox(height: 1),
+                        Text(
+                          '${saved.length} resep • $readyCount siap masak',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.textSageGrey,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    width: 38,
+                    height: 38,
+                    decoration: BoxDecoration(
+                      color: _cardSlate,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: _borderSlate),
+                    ),
+                    child: const Icon(
+                      Icons.favorite_rounded,
+                      size: 18,
+                      color: Color(0xFFE11D48),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Single-line filter pills (38px)
+            SizedBox(
+              height: 38,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                physics: const BouncingScrollPhysics(),
+                itemCount: _BookmarkFilter.values.length,
+                separatorBuilder: (_, _) => const SizedBox(width: 8),
+                itemBuilder: (context, i) {
+                  final f = _BookmarkFilter.values[i];
+                  final selected = f == _filter;
+                  return GestureDetector(
+                    onTap: () {
+                      HapticFeedback.selectionClick();
+                      setState(() => _filter = f);
+                    },
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 220),
+                      curve: Curves.easeOutCubic,
+                      height: 38,
+                      padding: const EdgeInsets.symmetric(horizontal: 13),
+                      decoration: BoxDecoration(
+                        color: selected ? AppTheme.forestEmerald : _cardSlate,
+                        borderRadius: BorderRadius.circular(999),
+                        border: Border.all(
+                          color: selected
+                              ? AppTheme.forestEmerald
+                              : AppTheme.borderSlateLight,
+                        ),
+                        boxShadow: selected
+                            ? [
+                                BoxShadow(
+                                  color: AppTheme.forestEmerald
+                                      .withValues(alpha: 0.20),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ]
+                            : null,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
                                 f.icon,
@@ -298,8 +308,6 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
             ),
           ),
         );
-      },
-    );
   }
 }
 

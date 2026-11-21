@@ -1,9 +1,8 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../data/mock_pantry_data.dart';
-import '../models/recipe_model.dart';
-import '../theme/app_theme.dart';
+import '../../core/theme/app_theme.dart';
+import '../models/ui_recipe_model.dart';
 import '../widgets/cooking_mode_sheet.dart';
 import '../widgets/food_illustration_widget.dart';
 
@@ -24,6 +23,7 @@ class RecipeDetailScreen extends StatefulWidget {
   final VoidCallback onBookmarkToggle;
   final ValueChanged<String> onTogglePantryIngredient;
   final ValueChanged<Iterable<String>>? onConsumeIngredients;
+  final Map<String, String> ingredientIcons;
 
   const RecipeDetailScreen({
     super.key,
@@ -33,6 +33,7 @@ class RecipeDetailScreen extends StatefulWidget {
     required this.onBookmarkToggle,
     required this.onTogglePantryIngredient,
     this.onConsumeIngredients,
+    this.ingredientIcons = const <String, String>{},
   });
 
   @override
@@ -245,14 +246,18 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                                       : AppTheme.almostText,
                                 ),
                                 const SizedBox(width: 5),
-                                Text(
-                                  matchResult.badgeText,
-                                  style: TextStyle(
-                                    fontSize: 11.5,
-                                    fontWeight: FontWeight.w800,
-                                    color: isReady100
-                                        ? AppTheme.readyText
-                                        : AppTheme.almostText,
+                                Flexible(
+                                  child: Text(
+                                    matchResult.badgeText,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 11.5,
+                                      fontWeight: FontWeight.w800,
+                                      color: isReady100
+                                          ? AppTheme.readyText
+                                          : AppTheme.almostText,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -281,12 +286,16 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                                   color: _forestPrimary,
                                 ),
                                 const SizedBox(width: 5),
-                                Text(
-                                  recipe.cookingTool.badgeLabel,
-                                  style: const TextStyle(
-                                    fontSize: 11.5,
-                                    fontWeight: FontWeight.w800,
-                                    color: _forestPrimary,
+                                Flexible(
+                                  child: Text(
+                                    recipe.cookingTool.badgeLabel,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 11.5,
+                                      fontWeight: FontWeight.w800,
+                                      color: _forestPrimary,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -477,10 +486,9 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                             final inPantry = _localPantryIds.contains(
                               item.ingredientId,
                             );
-                            final pantryObj =
-                                MockPantryData.findIngredientById(
-                                  item.ingredientId,
-                                );
+                            final ingredientEmoji =
+                                widget.ingredientIcons[item.ingredientId] ??
+                                '🥘';
 
                             return Column(
                               children: [
@@ -579,7 +587,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                                         ),
                                         const SizedBox(width: 12),
                                         Text(
-                                          pantryObj?.emoji ?? '🥘',
+                                          ingredientEmoji,
                                           style: const TextStyle(fontSize: 18),
                                         ),
                                         const SizedBox(width: 10),

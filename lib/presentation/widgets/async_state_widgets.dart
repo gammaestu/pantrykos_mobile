@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../theme/app_theme.dart';
+import '../../core/theme/app_theme.dart';
 
 /// Smooth pulsing skeleton loader matching the proportions of `RecipeMatcherCard`.
 /// Animates between [AppTheme.shimmerBase] (`#E8F3EC`) and
