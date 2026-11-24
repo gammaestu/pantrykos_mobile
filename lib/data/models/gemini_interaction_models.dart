@@ -1,51 +1,50 @@
 /// Typed request/response DTOs and JSON schemas for Google AI Studio's
-/// unified Gemini Interactions API (`POST /v1beta/interactions`).
+/// standard Gemini API (`POST /v1beta/models/{model}:generateContent`).
 class GeminiInteractionSchemas {
   GeminiInteractionSchemas._();
 
   /// Structured JSON Schema for pantry ingredient visual detection.
-  static const Map<String, dynamic> ingredientDetectionSchema =
-      <String, dynamic>{
-        'type': 'object',
-        'properties': <String, dynamic>{
-          'ingredients': <String, dynamic>{
-            'type': 'array',
-            'items': <String, dynamic>{
-              'type': 'object',
-              'properties': <String, dynamic>{
-                'id': <String, dynamic>{'type': 'string'},
-                'name': <String, dynamic>{'type': 'string'},
-                'confidence': <String, dynamic>{'type': 'number'},
-              },
-              'required': <String>['id', 'name', 'confidence'],
-            },
+  static const Map<String, dynamic> ingredientDetectionSchema = {
+    'type': 'OBJECT',
+    'properties': {
+      'ingredients': {
+        'type': 'ARRAY',
+        'items': {
+          'type': 'OBJECT',
+          'properties': {
+            'id': {'type': 'STRING'},
+            'name': {'type': 'STRING'},
+            'confidence': {'type': 'NUMBER'},
           },
+          'required': ['id', 'name', 'confidence'],
         },
-        'required': <String>['ingredients'],
-      };
+      },
+    },
+    'required': ['ingredients'],
+  };
 
   /// Minimal structured JSON Schema for instant connectivity checks.
-  static const Map<String, dynamic> connectionPingSchema = <String, dynamic>{
-    'type': 'object',
-    'properties': <String, dynamic>{
-      'status': <String, dynamic>{'type': 'string'},
+  static const Map<String, dynamic> connectionPingSchema = {
+    'type': 'OBJECT',
+    'properties': {
+      'status': {'type': 'STRING'},
     },
-    'required': <String>['status'],
+    'required': ['status'],
   };
 }
 
-/// Request payload builder for `POST https://generativelanguage.googleapis.com/v1beta/interactions`.
+/// Request payload builder for `POST /v1beta/models/{model}:generateContent`.
 class GeminiInteractionRequest {
   const GeminiInteractionRequest({
     required this.model,
-    required this.input,
+    required this.parts,
     this.systemInstruction,
     this.thinkingLevel = 'low',
     this.maxOutputTokens = 2048,
     this.responseSchema,
   });
 
-  /// Builds a multimodal image + text vision scan interaction request.
+  /// Builds a multimodal image + text vision scan request.
   factory GeminiInteractionRequest.visionScan({
     required String model,
     required String systemInstruction,
@@ -58,12 +57,13 @@ class GeminiInteractionRequest {
     return GeminiInteractionRequest(
       model: model,
       systemInstruction: systemInstruction,
-      input: <Map<String, dynamic>>[
-        <String, dynamic>{'type': 'text', 'text': prompt},
-        <String, dynamic>{
-          'type': 'image',
-          'data': base64Image,
-          'mime_type': mimeType,
+      parts: [
+        {'text': prompt},
+        {
+          'inline_data': {
+            'mime_type': mimeType,
+            'data': base64Image,
+          },
         },
       ],
       thinkingLevel: thinkingLevel,
@@ -80,7 +80,9 @@ class GeminiInteractionRequest {
   }) {
     return GeminiInteractionRequest(
       model: model,
-      input: 'Return ONLY this exact JSON: {"status":"ok"}',
+      parts: const [
+        {'text': 'Return ONLY this exact JSON: {"status":"ok"}'},
+      ],
       thinkingLevel: thinkingLevel,
       maxOutputTokens: maxOutputTokens,
       responseSchema: GeminiInteractionSchemas.connectionPingSchema,
@@ -88,31 +90,39 @@ class GeminiInteractionRequest {
   }
 
   final String model;
-  final Object input;
+  final List<dynamic> parts;
   final String? systemInstruction;
   final String thinkingLevel;
   final int maxOutputTokens;
   final Map<String, dynamic>? responseSchema;
 
   Map<String, dynamic> toJson() {
-    final body = <String, dynamic>{
-      'model': model,
-      'input': input,
-      'generation_config': <String, dynamic>{
-        'thinking_level': thinkingLevel,
-        'max_output_tokens': maxOutputTokens,
-      },
+    final Map<String, dynamic> generationConfig = {
+      'maxOutputTokens': maxOutputTokens,
+      'temperature': 0.2,
+      
+    };
+
+    if (responseSchema != null) {
+      generationConfig['responseMimeType'] = 'application/json';
+      generationConfig['responseSchema'] = responseSchema;
+    }
+
+    final Map<String, dynamic> body = {
+      'contents': [
+        {
+          'role': 'user',
+          'parts': parts,
+        },
+      ],
+      'generationConfig': generationConfig,
     };
 
     if (systemInstruction != null && systemInstruction!.trim().isNotEmpty) {
-      body['system_instruction'] = systemInstruction!.trim();
-    }
-
-    if (responseSchema != null) {
-      body['response_format'] = <String, dynamic>{
-        'type': 'text',
-        'mime_type': 'application/json',
-        'schema': responseSchema,
+      body['systemInstruction'] = {
+        'parts': [
+          {'text': systemInstruction!.trim()},
+        ],
       };
     }
 
@@ -120,10 +130,7 @@ class GeminiInteractionRequest {
   }
 }
 
-/// Parsed response model from `POST /v1beta/interactions`.
-///
-/// Extracts text strictly from `model_output` steps (skipping internal
-/// `thought` steps), with defensive fallbacks for `outputs` and `output_text`.
+/// Parsed response model from `POST /v1beta/models/{model}:generateContent`.
 class GeminiInteractionResponse {
   const GeminiInteractionResponse({
     required this.id,
@@ -143,89 +150,51 @@ class GeminiInteractionResponse {
       status.toLowerCase() == 'failed' ||
       (errorMessage != null && errorMessage!.trim().isNotEmpty);
 
-  bool get isIncomplete => status.toLowerCase() == 'incomplete';
+  bool get isIncomplete =>
+      status.toUpperCase() == 'MAX_TOKENS' ||
+      status.toLowerCase() == 'incomplete';
 
   factory GeminiInteractionResponse.fromJson(Map<String, dynamic> json) {
-    final id = (json['id'] ?? '').toString();
-    final status = (json['status'] ?? 'completed').toString();
-    final model = (json['model'] ?? '').toString();
-
     String? errorMsg;
     final rawError = json['error'];
     if (rawError is Map) {
       errorMsg = rawError['message']?.toString().trim() ??
-          rawError['code']?.toString().trim();
+          rawError['status']?.toString().trim();
     } else if (rawError != null) {
       errorMsg = rawError.toString().trim();
     }
 
-    final outputText = _extractOutputText(json);
-
-    return GeminiInteractionResponse(
-      id: id,
-      status: status,
-      model: model,
-      outputText: outputText,
-      errorMessage: errorMsg,
-    );
-  }
-
-  static String _extractOutputText(Map<String, dynamic> json) {
+    final candidates = json['candidates'];
+    String finishReason = 'STOP';
     final buffer = StringBuffer();
 
-    // 1. Primary Interactions API schema: `steps` array with `type: "model_output"`.
-    final steps = json['steps'];
-    if (steps is List) {
-      for (final step in steps) {
-        if (step is! Map) continue;
-        final stepType = step['type']?.toString();
-        if (stepType != 'model_output') continue;
-
-        final content = step['content'];
-        if (content is List) {
-          for (final block in content) {
-            if (block is! Map) continue;
-            final blockType = block['type']?.toString();
-            if (blockType == null || blockType == 'text') {
-              final text = block['text']?.toString();
-              if (text != null) {
-                buffer.write(text);
+    if (candidates is List && candidates.isNotEmpty) {
+      final first = candidates.first;
+      if (first is Map) {
+        finishReason = (first['finishReason'] ?? 'STOP').toString();
+        final content = first['content'];
+        if (content is Map) {
+          final parts = content['parts'];
+          if (parts is List) {
+            for (final part in parts) {
+              if (part is Map && part['thought'] != true) {
+                final text = part['text']?.toString();
+                if (text != null) {
+                  buffer.write(text);
+                }
               }
             }
           }
-        } else if (content is String) {
-          buffer.write(content);
         }
       }
-      if (buffer.isNotEmpty) {
-        return buffer.toString();
-      }
     }
 
-    // 2. Fallback schema: top-level `outputs` array.
-    final outputs = json['outputs'];
-    if (outputs is List) {
-      for (final item in outputs) {
-        if (item is! Map) continue;
-        final itemType = item['type']?.toString();
-        if (itemType == null || itemType == 'text') {
-          final text = item['text']?.toString();
-          if (text != null) {
-            buffer.write(text);
-          }
-        }
-      }
-      if (buffer.isNotEmpty) {
-        return buffer.toString();
-      }
-    }
-
-    // 3. Fallback convenience property: `output_text`.
-    final directText = json['output_text'];
-    if (directText is String && directText.trim().isNotEmpty) {
-      return directText;
-    }
-
-    return '';
+    return GeminiInteractionResponse(
+      id: (json['responseId'] ?? '').toString(),
+      status: errorMsg != null ? 'failed' : finishReason,
+      model: (json['modelVersion'] ?? '').toString(),
+      outputText: buffer.toString(),
+      errorMessage: errorMsg,
+    );
   }
 }

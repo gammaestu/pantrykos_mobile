@@ -42,7 +42,7 @@ class AiVisionException implements Exception {
   String toString() => 'AiVisionException(${type.name}): $message';
 }
 
-/// Callback signature abstracting raw Gemini Interactions execution for unit tests.
+/// Callback signature abstracting raw Gemini execution for unit tests.
 typedef GeminiVisionExecutor = Future<String?> Function({
   required String apiKey,
   required String model,
@@ -56,13 +56,8 @@ typedef GeminiVisionExecutor = Future<String?> Function({
 /// Callback signature abstracting DNS pre-flight checks for unit tests.
 typedef DnsLookupExecutor = Future<List<InternetAddress>> Function(String host);
 
-/// AI Computer Vision service powered by Google AI Studio's unified
-/// **Gemini Interactions API** (`POST /v1beta/interactions`) with
-/// `gemini-4-hydrogen` as the default model.
-///
-/// Uses non-persistent [Dio] HTTP connections (`Connection: close`,
-/// `Accept-Encoding: identity`) and the `x-goog-api-key` header to prevent
-/// Android Emulator keep-alive and gzip stream stalls.
+/// AI Computer Vision service powered by Google AI Studio's Gemini API
+/// (`POST /v1beta/models/{model}:generateContent`).
 class AiVisionService {
   AiVisionService({
     String? defaultApiKey,
@@ -81,7 +76,7 @@ class AiVisionService {
 
   static const String defaultModelName = ApiConfig.defaultGeminiModel;
   static const String defaultThinkingLevel = 'low';
-  static const double minConfidenceThreshold = 0.70;
+  static const double minConfidenceThreshold = 0.55;
   static const int scanMaxOutputTokens = 2048;
   static const int pingMaxOutputTokens = 256;
   static const Duration defaultConnectTimeout =
@@ -163,7 +158,7 @@ class AiVisionService {
   }
 
   /// Runs a 3-second pre-flight DNS/internet check and sends a lightweight
-  /// Interactions API JSON ping to [model] using [apiKey] in the
+  /// `:generateContent` JSON ping to [model] using [apiKey] in the
   /// `'x-goog-api-key'` header, returning round-trip latency in milliseconds.
   Future<int> testConnection({
     String? apiKey,
@@ -198,7 +193,7 @@ class AiVisionService {
     final stopwatch = Stopwatch()..start();
     try {
       final response = await client.post<dynamic>(
-        ApiConfig.geminiInteractionsEndpoint,
+        ApiConfig.geminiGenerateContentUrl(effectiveModel),
         data: request.toJson(),
         options: GeminiHttpClientFactory.requestOptions(
           apiKey: effectiveApiKey,
@@ -262,12 +257,9 @@ class AiVisionService {
     );
   }
 
-  /// Analyzes [imageBytes] via the Gemini Interactions API and returns strictly
+  /// Analyzes [imageBytes] via Gemini `:generateContent` and returns strictly
   /// validated, deduplicated [DetectedIngredient] items whose `id` exists in
   /// [masterIngredients] and whose `confidence >= 0.70`.
-  ///
-  /// Returns an empty list (`[]`) when no recognizable food is visible.
-  /// Throws [AiVisionException] with exact diagnostics on error.
   Future<List<DetectedIngredient>> detectIngredients({
     required Uint8List imageBytes,
     required List<Ingredient> masterIngredients,
@@ -404,7 +396,7 @@ class AiVisionService {
     );
 
     final response = await client.post<dynamic>(
-      ApiConfig.geminiInteractionsEndpoint,
+      ApiConfig.geminiGenerateContentUrl(model),
       data: request.toJson(),
       options: GeminiHttpClientFactory.requestOptions(
         apiKey: cleanKey,

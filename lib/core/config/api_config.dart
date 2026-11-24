@@ -1,5 +1,5 @@
 /// Central runtime API configuration for PantryKos remote catalog & Gemini
-/// Interactions API endpoints.
+/// REST API endpoints.
 class ApiConfig {
   ApiConfig({String? initialRemoteJsonUrl})
       : _remoteJsonUrl = (initialRemoteJsonUrl != null &&
@@ -8,33 +8,42 @@ class ApiConfig {
             : defaultRemoteJsonUrl;
 
   /// Default remote JSON catalog hosted on the PantryKos GitHub repository.
-  static const String defaultRemoteJsonUrl =
-      'https://raw.githubusercontent.com/gammaestu/pantrykos_mobile/main/assets/data/pantrykos_db.json';
+  static const String defaultRemoteJsonUrl ='';
+      // 'https://raw.githubusercontent.com/gammaestu/pantrykos_mobile/main/assets/data/pantrykos_db.json'
 
-  /// Default Laravel AI backend base URL (Android emulator localhost).
-  static const String defaultLaravelBaseUrl = 'http://10.0.2.2:8000/api';
+  /// Default Laravel AI backend base URL (unused in standalone mobile mode).
+  static const String defaultLaravelBaseUrl = 'http://192.168.1.2:8000/api';
 
-  /// Official Google AI Studio Interactions API REST endpoint.
-  static const String geminiInteractionsEndpoint =
-      'https://generativelanguage.googleapis.com/v1beta/interactions';
+  /// Official Google AI Studio REST API base URL.
+  static const String geminiBaseUrl =
+      'https://generativelanguage.googleapis.com/v1beta/models';
 
-  /// Recommended fast, free/paid-tier multimodal default model on Interactions API.
-  static const String defaultGeminiModel = 'gemini-4-hydrogen';
+  /// Legacy alias kept for backward compatibility if referenced elsewhere.
+  static const String geminiInteractionsEndpoint = geminiBaseUrl;
+
+  /// Builds the official `:generateContent` REST endpoint for [model].
+  static String geminiGenerateContentUrl(String model) {
+    final cleanModel = model.replaceFirst('models/', '').trim();
+    return '$geminiBaseUrl/$cleanModel:generateContent';
+  }
+
+  /// Recommended fast, free/paid-tier multimodal default model verified in AI Studio.
+  static const String defaultGeminiModel = 'gemini-3.5-flash-lite';
 
   /// Preset Gemini models surfaced in the Info & AI Settings sheet.
   static const List<String> supportedGeminiModels = <String>[
     defaultGeminiModel,
-    'gemini-3.5-flash-lite',
-    'gemini-4-neon',
+    'gemini-3.5-flash',
+    'gemini-3.8-flash',
+    'gemini-2.5-flash',
   ];
 
   /// Obsolete or invalid model identifiers automatically migrated on startup.
   static const Set<String> legacyGeminiModels = <String>{
-    'gemini-3.8-flash',
+    'gemini-4-hydrogen',
+    'gemini-4-neon',
     'gemini-1.5-flash',
     'gemini-2.0-flash',
-    'gemini-2.5-flash',
-    'gemini-2.5-pro',
   };
 
   /// Connect & receive timeout enforced across remote catalog Dio requests.
@@ -49,11 +58,11 @@ class ApiConfig {
   String get laravelBaseUrl => _laravelBaseUrl;
   String get geminiModel => _geminiModel;
 
-  /// Returns the unified Interactions API REST endpoint.
-  String geminiInteractionsUrl() => geminiInteractionsEndpoint;
+  /// Returns the `:generateContent` REST endpoint for the active model.
+  String geminiInteractionsUrl() => geminiGenerateContentUrl(_geminiModel);
 
   /// Normalizes persisted model identifiers, migrating legacy/broken models
-  /// (such as `gemini-3.8-flash`) to [defaultGeminiModel].
+  /// to [defaultGeminiModel].
   static String normalizeGeminiModel(String? rawModel) {
     final trimmed = (rawModel ?? '').trim();
     if (trimmed.isEmpty || legacyGeminiModels.contains(trimmed.toLowerCase())) {

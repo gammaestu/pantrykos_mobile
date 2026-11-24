@@ -85,6 +85,27 @@
       "aliases": ["keju", "kraft", "prochiz", "keju slice", "cheddar", "quick melt"]
     },
     {
+      "id": "ayam",
+      "name": "Daging Ayam",
+      "category": "Protein",
+      "icon": "🍗",
+      "aliases": ["ayam", "ayam potong", "dada ayam", "paha ayam", "sayap ayam", "chicken"]
+    },
+    {
+      "id": "nugget",
+      "name": "Chicken Nugget",
+      "category": "Protein",
+      "icon": "🍤",
+      "aliases": ["nugget", "fiesta", "so good", "kanzler nugget", "champ", "belfoods"]
+    },
+    {
+      "id": "ikan_asin",
+      "name": "Ikan Asin / Teri",
+      "category": "Protein",
+      "icon": "🐟",
+      "aliases": ["ikan asin", "teri", "ikan teri", "teri medan", "ikan pindang", "cue"]
+    },
+    {
       "id": "sawi",
       "name": "Sawi Hijau",
       "category": "Sayur",
@@ -127,6 +148,55 @@
       "aliases": ["daun bawang", "loncang", "prei", "scallion", "spring onion"]
     },
     {
+      "id": "tauge",
+      "name": "Tauge / Toge",
+      "category": "Sayur",
+      "icon": "🌱",
+      "aliases": ["tauge", "toge", "kecambah", "toge pendek", "toge panjang", "bean sprouts"]
+    },
+    {
+      "id": "terong",
+      "name": "Terong Ungu",
+      "category": "Sayur",
+      "icon": "🍆",
+      "aliases": ["terong", "terung", "terong ungu", "terong bulat", "terong lalap", "eggplant"]
+    },
+    {
+      "id": "buncis",
+      "name": "Buncis",
+      "category": "Sayur",
+      "icon": "🫛",
+      "aliases": ["buncis", "kacang panjang", "baby buncis", "green beans"]
+    },
+    {
+      "id": "timun",
+      "name": "Mentimun",
+      "category": "Sayur",
+      "icon": "🥒",
+      "aliases": ["timun", "mentimun", "ketimun", "timun lalap", "cucumber"]
+    },
+    {
+      "id": "bayam",
+      "name": "Bayam",
+      "category": "Sayur",
+      "icon": "🥬",
+      "aliases": ["bayam", "bayam hijau", "bayam merah", "spinach"]
+    },
+    {
+      "id": "brokoli",
+      "name": "Brokoli",
+      "category": "Sayur",
+      "icon": "🥦",
+      "aliases": ["brokoli", "kembang kol", "broccoli", "cauliflower"]
+    },
+    {
+      "id": "jamur",
+      "name": "Jamur Tiram / Enoki",
+      "category": "Sayur",
+      "icon": "🍄",
+      "aliases": ["jamur", "jamur tiram", "jamur enoki", "jamur kancing", "mushroom"]
+    },
+    {
       "id": "bawang_merah",
       "name": "Bawang Merah",
       "category": "Bumbu Kos",
@@ -148,6 +218,20 @@
       "aliases": ["cabai", "cabe", "cabai rawit", "cabe setan", "lombok", "chili"]
     },
     {
+      "id": "cabai_merah",
+      "name": "Cabai Merah Keriting",
+      "category": "Bumbu Kos",
+      "icon": "🌶️",
+      "aliases": ["cabai merah", "cabe merah", "cabai keriting", "cabai besar", "red chili"]
+    },
+    {
+      "id": "bawang_bombay",
+      "name": "Bawang Bombay",
+      "category": "Bumbu Kos",
+      "icon": "🧅",
+      "aliases": ["bombay", "bawang bombay", "onion"]
+    },
+    {
       "id": "kecap_manis",
       "name": "Kecap Manis",
       "category": "Bumbu Kos",
@@ -160,6 +244,27 @@
       "category": "Bumbu Kos",
       "icon": "🧴",
       "aliases": ["saos", "saus", "saus abc", "saus indofood", "chili sauce"]
+    },
+    {
+      "id": "saus_tiram",
+      "name": "Saus Tiram",
+      "category": "Bumbu Kos",
+      "icon": "🦪",
+      "aliases": ["saus tiram", "saori", "lee kum kee", "oyster sauce"]
+    },
+    {
+      "id": "kaldu_bubuk",
+      "name": "Kaldu Bubuk / Penyedap",
+      "category": "Bumbu Kos",
+      "icon": "🧂",
+      "aliases": ["royco", "masako", "kaldu ayam", "kaldu sapi", "kaldu jamur", "totole", "micin", "sasa", "penyedap"]
+    },
+    {
+      "id": "bumbu_instan",
+      "name": "Bumbu Racik Instan",
+      "category": "Bumbu Kos",
+      "icon": "📦",
+      "aliases": ["bumbu racik", "indofood racik", "bamboe", "sajiku", "tepung bumbu", "bumbu nasi goreng"]
     },
     {
       "id": "margarin",
@@ -485,6 +590,60 @@
           "step_number": 3,
           "instruction": "Masak dengan mode Cook sampai matang harum dan pulen.",
           "timer_seconds": 1200
+        }
+      ]
+    },
+    {
+      "id": "tumis_tauge_tahu_saus_tiram",
+      "title": "Tumis Tauge Tahu Praktis",
+      "image_url": "assets/images/recipes/tumis_kangkung_tahu.jpg",
+      "cook_time_min": 8,
+      "estimated_cost": 7000,
+      "tool_type": "Teflon",
+      "main_ingredients": ["tauge", "tahu", "tomat", "bawang_putih", "kaldu_bubuk"],
+      "optional_seasonings": ["Saus tiram", "Cabai rawit", "Daun bawang"],
+      "steps": [
+        {
+          "step_number": 1,
+          "instruction": "Tumis irisan bawang putih dan tomat di teflon dengan sedikit minyak sampai layu dan harum.",
+          "timer_seconds": 60
+        },
+        {
+          "step_number": 2,
+          "instruction": "Masukkan tahu potong dadu dan tauge yang sudah dicuci bersih.",
+          "timer_seconds": 90
+        },
+        {
+          "step_number": 3,
+          "instruction": "Taburkan kaldu bubuk secukupnya, aduk cepat di api besar selama 1 menit agar tauge tetap renyah.",
+          "timer_seconds": 60
+        }
+      ]
+    },
+    {
+      "id": "balado_terong_tomat_pedas",
+      "title": "Tumis Terong Ungu Balado Tomat",
+      "image_url": "assets/images/recipes/tempe_orek.jpg",
+      "cook_time_min": 12,
+      "estimated_cost": 8000,
+      "tool_type": "Teflon",
+      "main_ingredients": ["terong", "tomat", "bawang_merah", "bawang_putih", "cabai_rawit", "kaldu_bubuk"],
+      "optional_seasonings": ["Kecap manis", "Gula pasir", "Minyak goreng"],
+      "steps": [
+        {
+          "step_number": 1,
+          "instruction": "Potong serong terong ungu lalu goreng sebentar di teflon hingga layu dan tiriskan.",
+          "timer_seconds": 180
+        },
+        {
+          "step_number": 2,
+          "instruction": "Tumis irisan bawang merah, bawang putih, cabai rawit, dan potongan tomat hingga hancur menjadi sambal.",
+          "timer_seconds": 120
+        },
+        {
+          "step_number": 3,
+          "instruction": "Masukkan terong, beri kaldu bubuk dan sedikit kecap manis, lalu aduk rata hingga bumbu meresap.",
+          "timer_seconds": 90
         }
       ]
     }
